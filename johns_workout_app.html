@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>John's Training App</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3d;
+  --accent:#e8ff47;--accent2:#47c4ff;--accent3:#ff6b47;
+  --text:#f0f0f5;--muted:#6b6b8a;--success:#47ff9b;--warning:#ffb347;--danger:#ff4747;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;padding:10px 2px 8px;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color 0.2s;}
+.nav-btn.active{color:var(--accent);}
+.nav-btn svg{width:20px;height:20px;}
+
+.page{display:none;padding:16px 16px 100px;}
+.page.active{display:block;}
+.page-header{padding:20px 0 14px;display:flex;align-items:baseline;gap:10px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;line-height:1;}
+.page-sub{font-size:13px;color:var(--muted);}
+
+.selector-row{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.selector-row::-webkit-scrollbar{display:none;}
+.sel-btn{flex-shrink:0;padding:7px 16px;border-radius:100px;border:1.5px solid var(--border);background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.sel-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600;}
+
+/* HOME */
+.hero-card{background:linear-gradient(135deg,var(--surface2) 0%,#1e1e30 100%);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:14px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:var(--accent);opacity:0.06;}
+.hero-day{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--accent);line-height:1;margin-bottom:4px;}
+.hero-week{font-size:14px;color:var(--muted);margin-bottom:10px;}
+.hero-exercises{font-size:12px;color:var(--text);line-height:1.8;opacity:0.8;}
+.go-btn{display:block;width:100%;padding:16px;background:var(--accent);border:none;border-radius:14px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#000;cursor:pointer;text-align:center;margin-top:14px;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.stat-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;}
+.stat-value span{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;}
+
+/* ALERT */
+.alert-banner{border-radius:14px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;}
+.alert-banner.warning{background:#2a1f0a;border:1px solid var(--warning);}
+.alert-icon{font-size:20px;flex-shrink:0;}
+.alert-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.alert-body{font-size:12px;color:var(--muted);line-height:1.5;}
+.alert-btns{display:flex;gap:8px;margin-top:10px;}
+.alert-btn{padding:7px 14px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+.alert-btn.primary{background:var(--warning);color:#000;}
+.alert-btn.secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+
+/* EXERCISE CARDS */
+.progress-bar-wrap{background:var(--surface2);border-radius:100px;height:6px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:100px;transition:width 0.4s ease;}
+.ex-progress-text{font-size:12px;color:var(--muted);margin-bottom:6px;}
+
+.exercise-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
+.exercise-card.done{border-color:var(--success);}
+.exercise-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer;gap:10px;}
+.exercise-name{font-size:15px;font-weight:600;flex:1;line-height:1.3;}
+.exercise-tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;}
+.muscle-tag{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--surface2);color:var(--muted);}
+.muscle-tag.below-mev{background:#ff474720;color:var(--danger);border:1px solid #ff474740;}
+.muscle-tag.in-mav{background:#47ff9b20;color:var(--success);}
+.muscle-tag.ok{background:#ffb34720;color:var(--warning);}
+.exercise-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.badge-row{display:flex;gap:6px;}
+.badge{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--surface2);}
+.badge.sets{color:var(--accent2);}.badge.weight{color:var(--accent);}
+.done-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all 0.2s;margin-top:2px;}
+.done-check.checked{background:var(--success);border-color:var(--success);}
+
+/* RECOMMENDATION STRIP */
+.rec-strip{padding:8px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.rec-icon{font-size:14px;flex-shrink:0;}
+.rec-text{font-size:11px;color:var(--muted);line-height:1.4;flex:1;}
+.rec-text strong{color:var(--text);}
+
+/* SETS BODY */
+.sets-body{display:none;padding:0 16px 14px;border-top:1px solid var(--border);}
+.sets-body.open{display:block;}
+.rep-goal-hint{font-size:11px;color:var(--accent);text-align:center;margin:10px 0 6px;font-weight:500;}
+.sets-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.set-row{display:grid;grid-template-columns:24px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px;}
+.set-num{font-size:13px;color:var(--muted);font-weight:600;text-align:center;}
+.set-input{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;padding:9px 10px;width:100%;text-align:center;-webkit-appearance:none;}
+.set-input:focus{outline:none;border-color:var(--accent);}
+.set-input::placeholder{color:var(--muted);font-size:12px;}
+
+/* RATING SECTION */
+.rating-section{padding:10px 16px 14px;border-top:1px solid var(--border);}
+.rating-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:500;}
+.rating-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.rate-btn{padding:8px 4px;border-radius:10px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.15s;line-height:1.3;}
+.rate-btn.easy{color:#47ff9b;}.rate-btn.easy.selected{background:#47ff9b;color:#000;border-color:#47ff9b;}
+.rate-btn.moderate{color:#47c4ff;}.rate-btn.moderate.selected{background:#47c4ff;color:#000;border-color:#47c4ff;}
+.rate-btn.hard{color:#ffb347;}.rate-btn.hard.selected{background:#ffb347;color:#000;border-color:#ffb347;}
+.rate-btn.crusher{color:#ff4747;}.rate-btn.crusher.selected{background:#ff4747;color:#fff;border-color:#ff4747;}
+
+/* WEIGHT PAGE */
+.weight-log-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;}
+.weight-input-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+.weight-input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;padding:12px 16px;text-align:center;-webkit-appearance:none;}
+.weight-input:focus{outline:none;border-color:var(--accent);}
+.weight-unit{font-size:14px;color:var(--muted);}
+.log-btn{padding:13px 20px;background:var(--accent);border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#000;cursor:pointer;flex-shrink:0;}
+.phase-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1.5px solid var(--border);border-radius:100px;padding:6px 14px;margin-bottom:14px;}
+.phase-dot{width:8px;height:8px;border-radius:50%;}
+.phase-pill-label{font-size:13px;font-weight:600;}
+.phase-change-btn{font-size:11px;color:var(--accent2);font-weight:600;cursor:pointer;margin-left:6px;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.chart-wrap{position:relative;height:160px;margin-bottom:8px;}
+canvas#weightChart{width:100%!important;height:160px!important;}
+.chart-empty{text-align:center;color:var(--muted);font-size:13px;padding:50px 0;}
+.history-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.history-row:last-child{border-bottom:none;}
+.history-date{font-size:13px;color:var(--muted);}
+.history-weight{font-size:15px;font-weight:600;}
+.history-delta{font-size:12px;font-weight:600;}
+.delta-down{color:var(--success);}.delta-up{color:var(--accent3);}.delta-same{color:var(--muted);}
+.history-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 8px;}
+.goal-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.goal-label{font-size:13px;color:var(--muted);}
+.goal-val{font-size:14px;font-weight:600;}
+
+/* MACROS */
+.training-type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.training-type-btn{padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:center;line-height:1.3;}
+.training-type-btn.active{background:var(--surface2);border-color:var(--accent2);color:var(--accent2);}
+.meal-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.meal-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.meal-number{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--accent);margin-right:12px;}
+.meal-timing{font-size:13px;color:var(--muted);flex:1;}
+.meal-arrow{color:var(--muted);transition:transform 0.2s;}
+.meal-arrow.open{transform:rotate(180deg);}
+.meal-body{display:none;border-top:1px solid var(--border);padding:14px 16px;}
+.meal-body.open{display:block;}
+.macro-row{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+.macro-row:last-child{border-bottom:none;}
+.macro-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.macro-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:2px;}
+.macro-value{font-size:14px;font-weight:600;}
+.sources-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;}
+.sources-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--accent2);margin-bottom:12px;}
+.sources-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.source-tag{background:var(--surface2);border-radius:8px;padding:6px 10px;font-size:12px;}
+.note-card{background:var(--surface2);border-left:3px solid var(--accent3);border-radius:0 10px 10px 0;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+
+/* LABEL CALCULATOR */
+.calc-btn{display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:4px 10px;border-radius:100px;border:1.5px solid var(--border);background:none;color:var(--accent2);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+.calc-btn svg{width:12px;height:12px;}
+.calc-sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px 48px;width:100%;max-width:480px;}
+.calc-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:4px;}
+.calc-target{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:18px;}
+.calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.calc-field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:6px;}
+.calc-field input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;padding:10px 12px;text-align:center;-webkit-appearance:none;}
+.calc-field input:focus{outline:none;border-color:var(--accent);}
+.calc-field input::placeholder{color:var(--muted);font-size:13px;font-weight:400;}
+.calc-result{background:var(--surface2);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid var(--border);}
+.calc-result-amount{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;color:var(--accent);line-height:1;}
+.calc-result-unit{font-size:13px;color:var(--muted);margin-top:2px;}
+.calc-result-breakdown{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;}
+.calc-result-note{font-size:11px;color:var(--warning);margin-top:6px;}
+.calc-go-btn{width:100%;padding:15px;background:var(--accent);border:none;border-radius:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#000;cursor:pointer;}
+.calc-close-btn{width:100%;padding:13px;background:none;border:1.5px solid var(--border);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;margin-top:8px;}
+.serving-hint{font-size:11px;color:var(--muted);text-align:center;margin-bottom:14px;line-height:1.5;}
+/* FOOD SEARCH */
+.food-btn{display:inline-flex;align-items:center;gap:4px;margin-top:5px;margin-left:6px;padding:4px 10px;border-radius:100px;border:1.5px solid var(--border);background:none;color:var(--success);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+/* MEAL TEMPLATES */
+.tpl-btn{display:inline-flex;align-items:center;gap:4px;margin-top:5px;margin-left:6px;padding:4px 10px;border-radius:100px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
+.tpl-btn.save{color:#a78bfa;border-color:#a78bfa44;}
+.tpl-btn.load{color:#f472b6;border-color:#f472b644;}
+.tpl-sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:22px 20px 48px;width:100%;max-width:480px;}
+.tpl-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s;}
+.tpl-item:active{border-color:#f472b6;}
+.tpl-item-name{font-size:14px;font-weight:600;}
+.tpl-item-foods{font-size:11px;color:var(--muted);margin-top:2px;}
+.tpl-item-del{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 8px;flex-shrink:0;}
+.tpl-name-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 14px;margin-bottom:12px;-webkit-appearance:none;}
+.tpl-name-input:focus{outline:none;border-color:#a78bfa;}
+.tpl-save-btn{width:100%;padding:14px;background:#a78bfa;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#000;cursor:pointer;margin-bottom:8px;}
+.tpl-cancel-btn{width:100%;padding:12px;background:none;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;}
+/* DAILY TRACKER */
+.day-tracker{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;margin:0 -16px 14px;display:flex;gap:10px;}
+.tracker-macro{flex:1;text-align:center;}
+.tracker-label{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.tracker-nums{font-family:'Bebas Neue',sans-serif;font-size:18px;line-height:1;}
+.tracker-bar-wrap{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.tracker-bar{height:100%;border-radius:2px;transition:width 0.3s;}
+/* MANUAL GRAM INPUT on slot entries */
+.gram-input{font-family:'Bebas Neue',sans-serif;font-size:22px;width:64px;background:none;border:none;border-bottom:2px solid var(--border);color:var(--text);text-align:right;padding:0 2px;-webkit-appearance:none;appearance:none;}
+.gram-input:focus{outline:none;border-bottom-color:var(--accent);}
+/* MANUAL ADD section in food modal */
+.manual-divider{text-align:center;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1px;margin:12px 0 10px;position:relative;}
+.manual-divider::before,.manual-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border);}
+.manual-divider::before{left:0;}.manual-divider::after{right:0;}
+.manual-row{display:flex;gap:8px;margin-bottom:8px;}
+.manual-field{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;-webkit-appearance:none;}
+.manual-field:focus{outline:none;border-color:var(--accent);}
+.manual-add-btn{padding:10px 16px;background:var(--accent);border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;color:#000;cursor:pointer;white-space:nowrap;}
+
+.food-search-sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 0;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;}
+.food-search-scrollable{flex:1;overflow-y:auto;padding-bottom:8px;}
+.food-search-footer{padding:12px 0 40px;border-top:1px solid var(--border);}
+.food-search-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:12px 16px;margin-bottom:12px;-webkit-appearance:none;}
+.food-search-input:focus{outline:none;border-color:var(--success);}
+.food-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:200px;overflow-y:auto;}
+.food-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color 0.15s;}
+.food-item:active{border-color:var(--success);}
+.food-item-name{font-size:14px;font-weight:600;}
+.food-item-macros{font-size:11px;color:var(--muted);margin-top:2px;}
+.food-item-arrow{color:var(--muted);font-size:18px;}
+.food-result-box{background:var(--surface2);border-radius:14px;padding:16px;margin-bottom:14px;border:1.5px solid var(--success);}
+.food-result-amount{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:2px;color:var(--success);line-height:1;}
+.food-result-label{font-size:13px;color:var(--muted);margin-top:2px;}
+.food-result-macros{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.8;border-top:1px solid var(--border);padding-top:10px;}
+.meal-done-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--surface2);}
+.meal-done-label{font-size:13px;color:var(--muted);}
+.meal-done-check{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.meal-done-check.checked{background:var(--success);border-color:var(--success);}
+.meal-card.meal-complete{border-color:var(--success);}
+.meal-card.meal-complete .meal-number{color:var(--success);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:28px 24px 44px;width:100%;max-width:480px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:8px;}
+.modal-body{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+.modal-btns{display:flex;flex-direction:column;gap:10px;}
+.modal-btn{padding:16px;border:none;border-radius:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;cursor:pointer;text-align:center;}
+.modal-btn.confirm{background:var(--warning);color:#000;}
+.modal-btn.cancel{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.modal-btn.phase-opt{background:var(--surface2);color:var(--text);border:1px solid var(--border);font-size:16px;}
+.modal-btn.phase-opt.cur{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header"><div class="page-title">JOHN'S</div><div class="page-sub">Training Hub</div></div>
+  <div id="home-alert"></div>
+  <div class="hero-card">
+    <div class="hero-day" id="today-day-label">DAY 1</div>
+    <div class="hero-week" id="today-week-label">Week 1</div>
+    <div class="hero-exercises" id="today-exercises-list"></div>
+    <button class="go-btn" onclick="goToWorkout()">START WORKOUT</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">Current Phase</div><div class="stat-value" id="home-phase" style="font-size:20px;">Base</div></div>
+    <div class="stat-card"><div class="stat-label">Current Weight</div><div class="stat-value" id="home-weight">— <span>lbs</span></div></div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">This Week Lost</div><div class="stat-value" id="home-week-lost">— <span>lbs</span></div></div>
+    <div class="stat-card"><div class="stat-label">Today Done</div><div class="stat-value" id="stat-done">0 <span>ex</span></div></div>
+  </div>
+</div>
+
+<!-- WORKOUT -->
+<div class="page" id="page-workout">
+  <div class="page-header"><div class="page-title">WORKOUT</div></div>
+  <div class="selector-row" id="week-btns"></div>
+  <div class="selector-row" id="day-btns"></div>
+  <div style="margin-bottom:14px;">
+    <div class="ex-progress-text" id="ex-progress-label">0 of 0 done</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ex-progress-fill" style="width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent));"></div></div>
+  </div>
+  <div id="exercises-container"></div>
+</div>
+
+<!-- WEIGHT -->
+<div class="page" id="page-weight">
+  <div class="page-header"><div class="page-title">WEIGHT</div><div class="page-sub">Daily tracking</div></div>
+  <div id="weight-alert"></div>
+  <div class="phase-pill">
+    <div class="phase-dot" id="phase-dot"></div>
+    <span class="phase-pill-label" id="phase-pill-label">Base</span>
+    <button class="phase-change-btn" onclick="openPhaseModal()">Change phase</button>
+  </div>
+  <div class="weight-log-card">
+    <div class="stat-label" style="margin-bottom:10px;">LOG TODAY'S WEIGHT</div>
+    <div class="weight-input-row">
+      <input class="weight-input" type="number" inputmode="decimal" id="weight-input" placeholder="000.0" step="0.1"/>
+      <span class="weight-unit">lbs</span>
+      <button class="log-btn" onclick="logWeight()">LOG</button>
+    </div>
+    <div style="font-size:11px;color:var(--muted);">Weigh in first thing in the morning for best results.</div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">Start Weight</div><div class="stat-value" id="w-start">— <span>lbs</span></div></div>
+    <div class="stat-card"><div class="stat-label">Current</div><div class="stat-value" id="w-current">— <span>lbs</span></div></div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">Total Lost</div><div class="stat-value" id="w-total-lost">— <span>lbs</span></div></div>
+    <div class="stat-card"><div class="stat-label">Goal / Week</div><div class="stat-value">1 <span>lb</span></div></div>
+  </div>
+  <div class="weight-log-card" id="weekly-progress-card" style="display:none;">
+    <div class="stat-label" style="margin-bottom:12px;">THIS WEEK'S PROGRESS</div>
+    <div class="goal-row"><span class="goal-label">Lost so far</span><span class="goal-val" id="week-lost-val">0 lbs</span></div>
+    <div class="goal-row" style="margin-bottom:12px;"><span class="goal-label">Weekly goal</span><span class="goal-val">1 lb</span></div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="week-progress-fill" style="width:0%;background:linear-gradient(90deg,var(--success),#47ffcc);"></div></div>
+  </div>
+  <div class="weight-log-card">
+    <div class="stat-label" style="margin-bottom:12px;">30-DAY TREND</div>
+    <div class="chart-wrap">
+      <div class="chart-empty" id="chart-empty">Log a few days to see your trend</div>
+      <canvas id="weightChart" style="display:none;"></canvas>
+    </div>
+  </div>
+  <div class="weight-log-card" id="history-list-card" style="display:none;">
+    <div class="stat-label" style="margin-bottom:12px;">RECENT ENTRIES</div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- MACROS -->
+<div class="page" id="page-macros">
+  <div class="page-header"><div class="page-title">MACROS</div><div class="page-sub">Nutrition guide</div></div>
+  <!-- STICKY DAILY TRACKER -->
+  <div class="day-tracker" id="day-tracker">
+    <div class="tracker-macro">
+      <div class="tracker-label">Protein</div>
+      <div class="tracker-nums"><span id="tr-p-eaten">0</span><span style="font-size:12px;color:var(--muted);">/<span id="tr-p-goal">0</span>g</span></div>
+      <div class="tracker-bar-wrap"><div class="tracker-bar" id="tr-p-bar" style="width:0%;background:#ff6b47;"></div></div>
+    </div>
+    <div class="tracker-macro">
+      <div class="tracker-label">Carbs</div>
+      <div class="tracker-nums"><span id="tr-c-eaten">0</span><span style="font-size:12px;color:var(--muted);">/<span id="tr-c-goal">0</span>g</span></div>
+      <div class="tracker-bar-wrap"><div class="tracker-bar" id="tr-c-bar" style="width:0%;background:#47c4ff;"></div></div>
+    </div>
+    <div class="tracker-macro">
+      <div class="tracker-label">Fats</div>
+      <div class="tracker-nums"><span id="tr-f-eaten">0</span><span style="font-size:12px;color:var(--muted);">/<span id="tr-f-goal">0</span>g</span></div>
+      <div class="tracker-bar-wrap"><div class="tracker-bar" id="tr-f-bar" style="width:0%;background:#ffb347;"></div></div>
+    </div>
+  </div>
+  <div class="selector-row" id="phase-btns"></div>
+  <div class="training-type-row" id="training-type-btns"></div>
+  <div id="meals-container"></div>
+  <div class="sources-section">
+    <div class="sources-title">LEAN PROTEINS</div>
+    <div class="sources-grid">
+      <div class="source-tag">Any fish (tuna, salmon…)</div><div class="source-tag">Any seafood</div>
+      <div class="source-tag">Chicken breast</div><div class="source-tag">Turkey breast</div>
+      <div class="source-tag">Beef 90%+ lean</div><div class="source-tag">Steak 90%+ lean</div>
+      <div class="source-tag">Egg whites</div><div class="source-tag">Turkey 90%+ lean</div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">2oz=12g · 3oz=18g · 4oz=24g · 5oz=30g · 6oz=36g · 7oz=42g</div>
+  </div>
+  <div class="sources-section">
+    <div class="sources-title">VEGGIES</div>
+    <div class="sources-grid">
+      <div class="source-tag">Broccoli</div><div class="source-tag">Spinach</div><div class="source-tag">Lettuce</div><div class="source-tag">Onions</div>
+      <div class="source-tag">Tomatoes</div><div class="source-tag">Green Peppers</div><div class="source-tag">Asparagus</div><div class="source-tag">Cabbage</div>
+      <div class="source-tag">Cauliflower</div><div class="source-tag">Celery</div><div class="source-tag">Cucumbers</div><div class="source-tag">Green Beans</div>
+      <div class="source-tag">Mushrooms</div><div class="source-tag">Yellow Squash</div><div class="source-tag">Zucchini</div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">1 small handful = 1 cup</div>
+  </div>
+  <div class="sources-section">
+    <div class="sources-title">HEALTHY FATS</div>
+    <div class="sources-grid">
+      <div class="source-tag">Small handful of nuts</div><div class="source-tag">1/2 avocado</div>
+      <div class="source-tag">1 tbsp olive oil</div><div class="source-tag">1 tbsp canola oil</div>
+      <div class="source-tag">2 tbsp natural nut butter</div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">1 serving ≈ 15g fat</div>
+  </div>
+  <div class="sources-section">
+    <div class="sources-title">HEALTHY CARBS</div>
+    <div class="sources-grid">
+      <div class="source-tag">Whole grain bread</div><div class="source-tag">Brown rice</div>
+      <div class="source-tag">Whole wheat pasta</div><div class="source-tag">Oatmeal</div>
+      <div class="source-tag">Sweet Potatoes</div><div class="source-tag">Quinoa</div><div class="source-tag">Any fruit</div>
+    </div>
+  </div>
+  <div class="sources-section">
+    <div class="sources-title">WORKOUT SHAKE CARBS</div>
+    <div class="sources-grid">
+      <div class="source-tag">Gatorade</div><div class="source-tag">Lemonade</div>
+      <div class="source-tag">Fruit Punch</div><div class="source-tag">Kool Aid</div><div class="source-tag">Any Fruit Juice</div>
+    </div>
+  </div>
+  <div class="note-card">Drink a gulp of your training shake (protein + carbs) between exercises. Finish the rest immediately after your workout.</div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showPage('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+  </button>
+  <button class="nav-btn" onclick="showPage('workout',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11M6.5 17.5h11M4 12h16M2 9.5l2 2.5-2 2.5M22 9.5l-2 2.5 2 2.5"/></svg>Workout
+  </button>
+  <button class="nav-btn" onclick="showPage('weight',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>Weight
+  </button>
+  <button class="nav-btn" onclick="showPage('macros',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>Macros
+  </button>
+</nav>
+
+<!-- MEAL TEMPLATE MODAL -->
+<div class="modal-overlay" id="tpl-modal">
+  <div class="tpl-sheet">
+    <div class="calc-title" id="tpl-modal-title">SAVE MEAL</div>
+    <div class="calc-target" id="tpl-modal-sub" style="margin-bottom:16px;"></div>
+    <div id="tpl-save-section" style="display:none;">
+      <input class="tpl-name-input" type="text" id="tpl-name-input" placeholder='e.g. "My Breakfast Oats"' maxlength="40"/>
+      <button class="tpl-save-btn" onclick="confirmSaveTemplate()">SAVE TEMPLATE</button>
+      <button class="tpl-cancel-btn" onclick="closeTplModal()">Cancel</button>
+    </div>
+    <div id="tpl-load-section" style="display:none;">
+      <div id="tpl-list"></div>
+      <button class="tpl-cancel-btn" onclick="closeTplModal()" style="margin-top:4px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOD SEARCH MODAL -->
+<div class="modal-overlay" id="food-modal">
+  <div class="food-search-sheet">
+    <div class="food-search-scrollable">
+      <div class="calc-title" id="food-modal-title">FIND A FOOD</div>
+      <div class="calc-target" id="food-modal-target"></div>
+      <input class="food-search-input" type="text" id="food-search-input" placeholder="Type a food (e.g. oats, pasta, chicken)" oninput="searchFoods(this.value)"/>
+      <div class="food-list" id="food-list"></div>
+      <div id="food-result-wrap" style="display:none;">
+        <div class="food-result-box">
+          <div class="food-result-amount" id="food-result-amount">—</div>
+          <div class="food-result-label" id="food-result-label"></div>
+          <div class="food-result-macros" id="food-result-macros"></div>
+        </div>
+      </div>
+    </div>
+    <div class="food-search-footer">
+      <div class="manual-divider">OR ADD MANUALLY</div>
+      <div class="manual-row">
+        <input class="manual-field" type="text" id="manual-name" placeholder="Food name (optional)" style="flex:2;"/>
+        <input class="manual-field" type="number" inputmode="decimal" id="manual-grams" placeholder="grams" style="flex:1;min-width:70px;"/>
+        <button class="manual-add-btn" onclick="addManualEntry()">ADD</button>
+      </div>
+      <button class="calc-close-btn" onclick="closeFoodModal()" style="margin-top:4px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LABEL CALCULATOR MODAL -->
+<div class="modal-overlay" id="calc-modal">
+  <div class="calc-sheet">
+    <div class="calc-title" id="calc-title">LABEL CALCULATOR</div>
+    <div class="calc-target" id="calc-target-label"></div>
+    <div class="serving-hint">Find these two numbers on the nutrition facts label.</div>
+    <div class="calc-fields">
+      <div class="calc-field">
+        <label>Serving size (g)</label>
+        <input type="number" inputmode="decimal" id="calc-serving" placeholder="e.g. 85" oninput="runCalc()"/>
+      </div>
+      <div class="calc-field">
+        <label id="calc-macro-label">Carbs per serving (g)</label>
+        <input type="number" inputmode="decimal" id="calc-macro-per" placeholder="e.g. 42" oninput="runCalc()"/>
+      </div>
+    </div>
+    <div class="calc-result" id="calc-result">
+      <div style="color:var(--muted);font-size:13px;">Enter the two numbers above</div>
+    </div>
+    <button class="calc-close-btn" onclick="closeCalc()">Close</button>
+  </div>
+</div>
+
+<!-- PHASE MODAL -->
+<div class="modal-overlay" id="phase-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">SWITCH PHASE?</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<script>
+const PHASES=["Base","Cut 1","Cut 2","Cut 3"];
+const PHASE_COLORS={"Base":"#47ff9b","Cut 1":"#47c4ff","Cut 2":"#ffb347","Cut 3":"#ff6b47"};
+
+// RP volume zones per muscle
+const RP={
+  "Chest":           {MEV:10,MAVlo:12,MAVhi:20,MRV:22},
+  "Back":            {MEV:10,MAVlo:14,MAVhi:22,MRV:25},
+  "Biceps":          {MEV:8, MAVlo:14,MAVhi:20,MRV:26},
+  "Triceps":         {MEV:6, MAVlo:10,MAVhi:14,MRV:18},
+  "Rear/Side Delts": {MEV:8, MAVlo:16,MAVhi:22,MRV:26},
+  "Front Delts":     {MEV:0, MAVlo:6, MAVhi:8, MRV:12},
+  "Traps":           {MEV:0, MAVlo:12,MAVhi:20,MRV:26},
+  "Abs":             {MEV:0, MAVlo:16,MAVhi:20,MRV:25},
+  "Glutes":          {MEV:0, MAVlo:4, MAVhi:12,MRV:16},
+  "Quads":           {MEV:8, MAVlo:12,MAVhi:18,MRV:20},
+  "Hamstrings":      {MEV:6, MAVlo:10,MAVhi:16,MRV:20},
+  "Calves":          {MEV:8, MAVlo:12,MAVhi:16,MRV:20},
+};
+
+function getMuscleStatus(muscle,weekIdx){
+  const vol=calcWeeklyVolume(weekIdx);
+  const sets=vol[muscle]||0;
+  const rp=RP[muscle];
+  if(!rp) return {label:'',cls:''};
+  if(sets<rp.MEV) return {label:'Below MEV',cls:'below-mev'};
+  if(sets<rp.MAVlo) return {label:'MEV→MAV',cls:'ok'};
+  if(sets<=rp.MAVhi) return {label:'In MAV',cls:'in-mav'};
+  return {label:'Near MRV',cls:'ok'};
+}
+
+// Weight increment by exercise type
+const BIG_COMPOUNDS=['Incline Medium Grip Bench Press','Medium Grip Bench Press','Incline Wide Grip Bench Press',
+  'Barbell Bent Over Row','Deficit Deadlift','Stiff-Legged Deadlift','High Bar Squat',
+  'Close Stance Feet Forward Squats','Leg Press','Seated Barbell Shoulder Press',
+  'Close Grip Bench Press','Skull Crusher'];
+function weightIncrement(exName){ return BIG_COMPOUNDS.includes(exName)?5:2.5; }
+
+// Parse the rep goal string to get minimum target reps per set
+// "3/fail" → 3, "2/fail" → 2, "1/fail" → 1
+function targetReps(rg){ const n=parseInt(rg);return isNaN(n)?10:n; }
+
+// Check if all logged sets hit target reps at consistent weight
+function allRepsClean(key, effSets, effWeight, rg){
+  const target=targetReps(rg);
+  for(let s=0;s<effSets;s++){
+    const sk=`${key}s${s}`;
+    const sv=S.setData[sk]||{};
+    const reps=parseInt(sv.reps)||0;
+    if(reps<target) return false;
+  }
+  // also need at least one set logged
+  const firstSet=S.setData[`${key}s0`]||{};
+  return !!firstSet.reps;
+}
+
+// Get the stored 10RM weight for an exercise (persists across weeks/days)
+function get10RM(exName){ return S.tenRM&&S.tenRM[exName]!==undefined?S.tenRM[exName]:null; }
+function set10RM(exName,weight){ if(!S.tenRM)S.tenRM={};S.tenRM[exName]=weight;save(); }
+
+// Effective weight: 10RM override > custom session override > plan default
+function effWeight(key,ex){
+  if(S.customWeights[key]!==undefined) return S.customWeights[key];
+  const rm=get10RM(ex.name);
+  if(rm!==null) return rm;
+  return ex.weight;
+}
+
+// Build recommendation for next session
+function buildRec(exName, key, effW, effS, rg, rating){
+  const clean=allRepsClean(key,effS,effW,rg);
+  const inc=weightIncrement(exName);
+
+  // Hit all reps cleanly
+  if(clean){
+    if(rating==='crusher'){
+      // All reps done but felt destroyed — hold weight
+      return {type:'hold', weight:effW, sets:effS,
+        note:`You hit all reps but were cooked. Hold at ${effW}lbs and see how next session feels.`,
+        color:'#ffb347', emoji:'⚠️'};
+    }
+    // Moderate or Easy — ready to go up
+    const newW=effW+inc;
+    return {type:'progress', weight:newW, sets:effS,
+      note:`You hit all reps at ${effW}lbs. Time to add weight — try ${newW}lbs next session.`,
+      color:'#47ff9b', emoji:'📈'};
+  }
+
+  // Didn't hit all reps
+  if(rating==='crusher'){
+    const newW=Math.round((effW*0.95)/2.5)*2.5;
+    return {type:'drop', weight:newW, sets:effS,
+      note:`Crusher session and missed reps. Drop to ${newW}lbs next time and rebuild.`,
+      color:'#ff4747', emoji:'🔻'};
+  }
+  if(rating==='hard'){
+    return {type:'hold', weight:effW, sets:effS,
+      note:`Didn't hit all reps yet at ${effW}lbs. Stay here until all sets are clean.`,
+      color:'#ffb347', emoji:'🔥'};
+  }
+  // Easy/Moderate but missed reps — unusual, just hold
+  return {type:'hold', weight:effW, sets:effS,
+    note:`Keep working at ${effW}lbs until every set hits the rep target.`,
+    color:'#47c4ff', emoji:'💪'};
+}
+
+// Find most recent session rec for this exercise
+function getPrevSessionData(exName){
+  // look through all stored session keys for this exercise name
+  const prefix=`ex:${exName}:`;
+  const keys=Object.keys(S.ratings||{}).filter(k=>k.startsWith(prefix));
+  if(!keys.length) return null;
+  keys.sort().reverse();
+  const ratingKey=keys[0];
+  const exKey=ratingKey.replace(prefix,'');
+  const rating=S.ratings[ratingKey];
+  // get what weight/sets were used that session
+  const w=S.customWeights[exKey]!==undefined?S.customWeights[exKey]:null;
+  const sets=S.customSets[exKey]!==undefined?S.customSets[exKey]:null;
+  return {rating,exKey,w,sets,ratingKey};
+}
+
+// RP-COMPLIANT 4-DAY PROGRAM
+// Week 1=MAV low, Week 2=mid MAV, Week 3=upper MAV, Week 4=peak (near MRV, deload next)
+const workoutData={days:[
+  {
+    name:"Day 1",focus:"Chest / Back / Delts + Arms",
+    weeks:[
+      {week:1,exercises:[
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:175,rg:"3/fail"},
+        {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:45, rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:130,rg:"3/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:95, rg:"3/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:20, rg:"3/fail"},
+        {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:3,weight:30, rg:"3/fail"},
+        {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:3,weight:50, rg:"3/fail"},
+        {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:3,weight:55, rg:"3/fail"},
+      ]},
+      {week:2,exercises:[
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:185,rg:"3/fail"},
+        {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:50, rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:210,rg:"3/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:145,rg:"3/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:22, rg:"3/fail"},
+        {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:3,weight:32, rg:"3/fail"},
+        {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:3,weight:55, rg:"3/fail"},
+        {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:3,weight:60, rg:"3/fail"},
+      ]},
+      {week:3,exercises:[
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:190,rg:"2/fail"},
+        {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:50, rg:"2/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:215,rg:"2/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:140,rg:"2/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:100,rg:"2/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:25, rg:"2/fail"},
+        {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:4,weight:35, rg:"2/fail"},
+        {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:3,weight:60, rg:"2/fail"},
+        {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:4,weight:60, rg:"2/fail"},
+      ]},
+      {week:4,exercises:[
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:195,rg:"1/fail"},
+        {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:52, rg:"1/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:220,rg:"1/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:145,rg:"1/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:105,rg:"1/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:27, rg:"1/fail"},
+        {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:4,weight:37, rg:"1/fail"},
+        {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:4,weight:62, rg:"1/fail"},
+        {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:4,weight:60, rg:"1/fail"},
+      ]},
+    ]
+  },
+  {
+    name:"Day 2",focus:"Legs / Shoulders / Triceps",
+    weeks:[
+      {week:1,exercises:[
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:275,rg:"3/fail"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:210,rg:"3/fail"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:155,rg:"3/fail"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:115,rg:"3/fail"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:115,rg:"3/fail"},
+        {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:3,weight:50, rg:"3/fail"},
+        {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
+        {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
+        {name:"Hammer Curl",                      muscle:"Biceps",         sets:3,weight:35, rg:"3/fail"},
+        {name:"Hanging Leg Raise",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
+      ]},
+      {week:2,exercises:[
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:290,rg:"3/fail"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:220,rg:"3/fail"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:165,rg:"3/fail"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:120,rg:"3/fail"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:120,rg:"3/fail"},
+        {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:3,weight:55, rg:"3/fail"},
+        {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:3,weight:70, rg:"3/fail"},
+        {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:70, rg:"3/fail"},
+        {name:"Hammer Curl",                      muscle:"Biceps",         sets:3,weight:37, rg:"3/fail"},
+        {name:"Hanging Leg Raise",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
+      ]},
+      {week:3,exercises:[
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:295,rg:"2/fail"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:225,rg:"2/fail"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:165,rg:"2/fail"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"2/fail"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"2/fail"},
+        {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:4,weight:60, rg:"2/fail"},
+        {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:4,weight:70, rg:"2/fail"},
+        {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:72, rg:"2/fail"},
+        {name:"Hammer Curl",                      muscle:"Biceps",         sets:4,weight:40, rg:"2/fail"},
+        {name:"Hanging Leg Raise",                muscle:"Abs",            sets:4,weight:0,  rg:"2/fail"},
+      ]},
+      {week:4,exercises:[
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:305,rg:"1/fail"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:230,rg:"1/fail"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:170,rg:"1/fail"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"1/fail"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"1/fail"},
+        {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:4,weight:65, rg:"1/fail"},
+        {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:4,weight:72, rg:"1/fail"},
+        {name:"Skull Crusher",                    muscle:"Triceps",        sets:4,weight:75, rg:"1/fail"},
+        {name:"Hammer Curl",                      muscle:"Biceps",         sets:4,weight:42, rg:"1/fail"},
+        {name:"Hanging Leg Raise",                muscle:"Abs",            sets:4,weight:0,  rg:"1/fail"},
+      ]},
+    ]
+  },
+  {
+    name:"Day 3",focus:"Back / Chest / Arms",
+    weeks:[
+      {week:1,exercises:[
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:160,rg:"3/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:2,weight:130,rg:"3/fail"},
+        {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:3,weight:25, rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:175,rg:"3/fail"},
+        {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:3,weight:75, rg:"3/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:135,rg:"3/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:95, rg:"3/fail"},
+        {name:"Cable Crunch",                     muscle:"Abs",            sets:3,weight:70, rg:"3/fail"},
+      ]},
+      {week:2,exercises:[
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:145,rg:"3/fail"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:170,rg:"3/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail"},
+        {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:3,weight:27, rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:210,rg:"3/fail"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:185,rg:"3/fail"},
+        {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:3,weight:80, rg:"3/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:145,rg:"3/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail"},
+        {name:"Cable Crunch",                     muscle:"Abs",            sets:3,weight:75, rg:"3/fail"},
+      ]},
+      {week:3,exercises:[
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:170,rg:"2/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:140,rg:"2/fail"},
+        {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:4,weight:30, rg:"2/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:215,rg:"2/fail"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:190,rg:"2/fail"},
+        {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:4,weight:80, rg:"2/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:150,rg:"2/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"2/fail"},
+        {name:"Cable Crunch",                     muscle:"Abs",            sets:4,weight:80, rg:"2/fail"},
+      ]},
+      {week:4,exercises:[
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:175,rg:"1/fail"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:145,rg:"1/fail"},
+        {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:4,weight:32, rg:"1/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:220,rg:"1/fail"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:195,rg:"1/fail"},
+        {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:4,weight:82, rg:"1/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:155,rg:"1/fail"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:105,rg:"1/fail"},
+        {name:"Cable Crunch",                     muscle:"Abs",            sets:4,weight:85, rg:"1/fail"},
+      ]},
+    ]
+  },
+  {
+    name:"Day 4",focus:"Deadlifts / Legs / Biceps",
+    weeks:[
+      {week:1,exercises:[
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:310,rg:"3/fail"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:265,rg:"3/fail"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:565,rg:"3/fail"},
+        {name:"EZ Curl",                          muscle:"Biceps",         sets:3,weight:75, rg:"3/fail"},
+        {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:55, rg:"3/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:20, rg:"3/fail"},
+        {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:3,weight:60, rg:"3/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:3,weight:325,rg:"3/fail"},
+        {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:40, rg:"3/fail"},
+        {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
+      ]},
+      {week:2,exercises:[
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:325,rg:"3/fail"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:280,rg:"3/fail"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:595,rg:"3/fail"},
+        {name:"EZ Curl",                          muscle:"Biceps",         sets:3,weight:80, rg:"3/fail"},
+        {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:57, rg:"3/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:22, rg:"3/fail"},
+        {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:340,rg:"3/fail"},
+        {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:40, rg:"3/fail"},
+        {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
+      ]},
+      {week:3,exercises:[
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:335,rg:"2/fail"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:285,rg:"2/fail"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:605,rg:"2/fail"},
+        {name:"EZ Curl",                          muscle:"Biceps",         sets:4,weight:80, rg:"2/fail"},
+        {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:60, rg:"2/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:25, rg:"2/fail"},
+        {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:4,weight:67, rg:"2/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:350,rg:"2/fail"},
+        {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:45, rg:"2/fail"},
+        {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:4,weight:0,  rg:"2/fail"},
+      ]},
+      {week:4,exercises:[
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:340,rg:"1/fail"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:290,rg:"1/fail"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:620,rg:"1/fail"},
+        {name:"EZ Curl",                          muscle:"Biceps",         sets:4,weight:82, rg:"1/fail"},
+        {name:"Preacher Curl",                    muscle:"Biceps",         sets:4,weight:62, rg:"1/fail"},
+        {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:27, rg:"1/fail"},
+        {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:4,weight:70, rg:"1/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:360,rg:"1/fail"},
+        {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:45, rg:"1/fail"},
+        {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:4,weight:0,  rg:"1/fail"},
+      ]},
+    ]
+  },
+]};
+
+// Volume calc (primary sets full, secondary 0.5)
+const EX_SECONDARY={
+  "Incline Medium Grip Bench Press":["Front Delts","Triceps"],
+  "Medium Grip Bench Press":["Triceps","Front Delts"],
+  "Incline Wide Grip Bench Press":["Front Delts"],
+  "Close Grip Bench Press":["Chest"],
+  "Barbell Bent Over Row":["Biceps"],
+  "Wide-Grip Pulldown":["Biceps"],
+  "Parallel Pulldown":["Biceps"],
+  "Deficit Deadlift":["Glutes","Hamstrings"],
+  "Stiff-Legged Deadlift":["Glutes","Back"],
+  "High Bar Squat":["Glutes","Hamstrings"],
+  "Leg Press":["Glutes"],
+  "Seated Barbell Shoulder Press":["Rear/Side Delts","Triceps"],
+};
+
+function calcWeeklyVolume(weekIdx){
+  const totals={};Object.keys(RP).forEach(m=>{totals[m]=0;});
+  workoutData.days.forEach(day=>{
+    const wd=day.weeks[weekIdx];
+    wd.exercises.forEach(ex=>{
+      if(totals[ex.muscle]!==undefined) totals[ex.muscle]+=ex.sets;
+      (EX_SECONDARY[ex.name]||[]).forEach(sm=>{if(totals[sm]!==undefined)totals[sm]+=ex.sets*0.5;});
+    });
+  });
+  Object.keys(totals).forEach(m=>{totals[m]=Math.round(totals[m]*10)/10;});
+  return totals;
+}
+
+// MACROS
+const macroPlans={
+  "Base":{
+    "First Thing":[
+      {meal:"Meal 1",time:"Drink 1/3 shake upon waking, 2/3 during workout",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 2",time:"20 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"2 servings healthy fats",c:"—",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"2 servings healthy fats",c:"—",w:"—"},
+    ],
+    "After 1 Meal":[
+      {meal:"Meal 1",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 2",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 3",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"2 servings healthy fats",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"2 servings healthy fats",c:"—",w:"—"},
+    ],
+    "After 2 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"2 servings healthy fats",c:"—",w:"—"},
+      {meal:"Meal 2",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 4",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"2 servings healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+    "After 3 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"2 servings healthy fats",c:"—",w:"—"},
+      {meal:"Meal 2",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"2 servings healthy fats",c:"—",w:"—"},
+      {meal:"Meal 3",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 5",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1 serving healthy fats",c:"75g healthy carbs",w:"—"},
+    ],
+  },
+  "Cut 1":{
+    "First Thing":[
+      {meal:"Meal 1",time:"Drink 1/3 shake upon waking, 2/3 during workout",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 2",time:"20 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 1 Meal":[
+      {meal:"Meal 1",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 2",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 3",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 2 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"1 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 2",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 4",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+    "After 3 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"1 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 2",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 3",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 5",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"75g healthy carbs",w:"—"},
+    ],
+  },
+  "Cut 2":{
+    "First Thing":[
+      {meal:"Meal 1",time:"Drink 1/3 shake upon waking, 2/3 during workout",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 2",time:"20 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 1 Meal":[
+      {meal:"Meal 1",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 2",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 3",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 2 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 2",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 4",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+    "After 3 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 2",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 3",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"75g carbs"},
+      {meal:"Meal 5",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"75g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+  },
+  "Cut 3":{
+    "First Thing":[
+      {meal:"Meal 1",time:"Drink 1/3 shake upon waking, 2/3 during workout",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"50g carbs"},
+      {meal:"Meal 2",time:"20 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"—",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 1 Meal":[
+      {meal:"Meal 1",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 2",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"50g carbs"},
+      {meal:"Meal 3",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"—",w:"—"},
+    ],
+    "After 2 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 2",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 3",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"50g carbs"},
+      {meal:"Meal 4",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 5",time:"2-4 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"25g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+    "After 3 Meals":[
+      {meal:"Meal 1",time:"Waking",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 2",time:"3-5 hrs after last meal",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"—",w:"—"},
+      {meal:"Meal 3",time:"1-3 hrs before workout",p:"8oz lean protein",v:"1 small handful greens",f:"1/2 serving healthy fats",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 4",time:"1/3 shake during, 2/3 right after",p:"45g whey protein in water",v:"—",f:"—",c:"—",w:"50g carbs"},
+      {meal:"Meal 5",time:"40 min after workout",p:"8oz lean protein",v:"1 small handful greens",f:"—",c:"50g healthy carbs",w:"—"},
+      {meal:"Meal 6",time:"Bedtime",p:"45g casein protein in water",v:"—",f:"1/2 serving healthy fats",c:"25g healthy carbs",w:"—"},
+    ],
+  },
+};
+
+// STATE
+let S={week:0,day:0,phase:"Base",macroPhase:"Base",trainingType:"First Thing",
+       weightLog:[],doneExercises:{},setData:{},ratings:{},customWeights:{},customSets:{},tenRM:{},mealDone:{},slotFoods:{},mealTemplates:{}};
+try{const sv=localStorage.getItem('jta4');if(sv)S=Object.assign({ratings:{},customWeights:{},customSets:{},tenRM:{},mealDone:{},slotFoods:{},mealTemplates:{}},S,JSON.parse(sv));}catch(e){}
+function save(){try{localStorage.setItem('jta4',JSON.stringify(S));}catch(e){}}
+
+// NAV
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='home') updateHome();
+  if(name==='weight') renderWeightPage();
+  if(name==='macros'){buildPhaseBtns();buildTTBtns();renderMeals();}
+}
+function goToWorkout(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-workout').classList.add('active');
+  document.querySelectorAll('.nav-btn')[1].classList.add('active');
+}
+
+// UTILS
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function getThisWeekLoss(){
+  if(S.weightLog.length<2) return null;
+  const d=new Date(todayStr()+'T12:00:00'),dow=d.getDay(),diff=dow===0?-6:1-dow;
+  const mon=new Date(d);mon.setDate(d.getDate()+diff);
+  const wStart=mon.toISOString().slice(0,10);
+  const tw=S.weightLog.filter(e=>e.date>=wStart),bef=S.weightLog.filter(e=>e.date<wStart);
+  if(!tw.length||!bef.length) return null;
+  return parseFloat((bef[bef.length-1].weight-tw[tw.length-1].weight).toFixed(1));
+}
+function checkStall(){
+  if(S.phase==="Cut 3"||S.weightLog.length<10) return null;
+  const today=new Date(todayStr()+'T12:00:00');
+  const losses=[];
+  for(let w=1;w<=2;w++){
+    const end=new Date(today);end.setDate(end.getDate()-(w-1)*7);
+    const start=new Date(end);start.setDate(start.getDate()-7);
+    const es=end.toISOString().slice(0,10),ss=start.toISOString().slice(0,10);
+    const iw=S.weightLog.filter(e=>e.date>=ss&&e.date<es),bw=S.weightLog.filter(e=>e.date<ss);
+    if(!iw.length||!bw.length) return null;
+    losses.push(bw[bw.length-1].weight-iw[iw.length-1].weight);
+  }
+  if(losses[0]<1&&losses[1]<1){const i=PHASES.indexOf(S.phase);return i<3?PHASES[i+1]:null;}
+  return null;
+}
+
+// HOME
+function updateHome(){
+  const day=workoutData.days[S.day],wd=day.weeks[S.week];
+  document.getElementById('today-day-label').textContent=day.name.toUpperCase();
+  document.getElementById('today-week-label').textContent=`Week ${S.week+1} · ${day.focus}`;
+  document.getElementById('today-exercises-list').textContent=wd.exercises.map(e=>e.name).join(' · ');
+  const hp=document.getElementById('home-phase');hp.textContent=S.phase;hp.style.color=PHASE_COLORS[S.phase];
+  if(S.weightLog.length){const l=S.weightLog[S.weightLog.length-1];document.getElementById('home-weight').innerHTML=`${l.weight} <span>lbs</span>`;}
+  const wl=getThisWeekLoss();
+  if(wl!==null){const el=document.getElementById('home-week-lost');el.innerHTML=`${wl>0?'':wl<0?'+':''}${Math.abs(wl).toFixed(1)} <span>lbs</span>`;el.style.color=wl>0?'var(--success)':wl<0?'var(--accent3)':'var(--muted)';}
+  let done=0;wd.exercises.forEach((_,i)=>{if(S.doneExercises[`w${S.week}d${S.day}e${i}`])done++;});
+  document.getElementById('stat-done').innerHTML=`${done} <span>ex</span>`;
+  renderPhaseAlert('home-alert');
+}
+
+function renderPhaseAlert(cid){
+  const el=document.getElementById(cid);if(!el)return;
+  const sug=checkStall();
+  if(sug){
+    el.innerHTML=`<div class="alert-banner warning"><div class="alert-icon">⚠️</div><div>
+      <div class="alert-title" style="color:var(--warning);">Weight loss stalled for 2 weeks</div>
+      <div class="alert-body">You haven't hit 1 lb/week on <strong>${S.phase}</strong>. Consider moving to <strong>${sug}</strong>.</div>
+      <div class="alert-btns">
+        <button class="alert-btn primary" onclick="openPhaseConfirm('${sug}')">Review & Switch</button>
+        <button class="alert-btn secondary" onclick="this.closest('.alert-banner').remove()">Dismiss</button>
+      </div></div></div>`;
+  } else {el.innerHTML='';}
+}
+
+// WORKOUT
+function buildWeekBtns(){
+  const c=document.getElementById('week-btns');c.innerHTML='';
+  for(let i=0;i<4;i++){const b=document.createElement('button');b.className='sel-btn'+(i===S.week?' active':'');b.textContent='Week '+(i+1);b.onclick=()=>{S.week=i;save();buildWeekBtns();renderExercises();updateHome();};c.appendChild(b);}
+}
+function buildDayBtns(){
+  const c=document.getElementById('day-btns');c.innerHTML='';
+  workoutData.days.forEach((d,i)=>{const b=document.createElement('button');b.className='sel-btn'+(i===S.day?' active':'');b.textContent=d.name;b.onclick=()=>{S.day=i;save();buildDayBtns();renderExercises();updateHome();};c.appendChild(b);});
+}
+
+function getExKey(weekIdx,dayIdx,exIdx){return `w${weekIdx}d${dayIdx}e${exIdx}`;}
+
+function renderExercises(){
+  const cont=document.getElementById('exercises-container');
+  const day=workoutData.days[S.day],wd=day.weeks[S.week];
+  cont.innerHTML='';
+  const exs=wd.exercises;
+  let done=exs.filter((_,i)=>S.doneExercises[getExKey(S.week,S.day,i)]).length;
+  document.getElementById('ex-progress-label').textContent=`${done} of ${exs.length} exercises done`;
+  document.getElementById('ex-progress-fill').style.width=`${exs.length?done/exs.length*100:0}%`;
+
+  exs.forEach((ex,ei)=>{
+    const key=getExKey(S.week,S.day,ei);
+    const isDone=!!S.doneExercises[key];
+    const muscleStatus=getMuscleStatus(ex.muscle,S.week);
+
+    // Effective weight: 10RM > custom > plan default
+    const eW=effWeight(key,ex);
+    const eS=S.customSets[key]!==undefined?S.customSets[key]:ex.sets;
+
+    // Current session rating
+    const ratingKey=`ex:${ex.name}:${key}`;
+    const cr=S.ratings[ratingKey]||'';
+
+    // Previous session data → build rec strip
+    const prev=getPrevSessionData(ex.name);
+    let recHtml='';
+    if(prev && prev.ratingKey!==ratingKey){
+      // get weight/sets used last session
+      const prevW=prev.w!==null?prev.w:(get10RM(ex.name)||ex.weight);
+      const prevS=prev.sets!==null?prev.sets:ex.sets;
+      const rec=buildRec(ex.name,prev.exKey,prevW,prevS,ex.rg,prev.rating);
+      const showApply=rec.type!=='hold'||rec.weight!==eW;
+      recHtml=`<div class="rec-strip" style="border-left:3px solid ${rec.color};">
+        <span class="rec-icon">${rec.emoji}</span>
+        <span class="rec-text">${rec.note}
+          ${showApply?`<br><span style="color:${rec.color};cursor:pointer;font-weight:600;text-decoration:underline;" onclick="applyRec('${key}','${ex.name}',${rec.weight},${eS})">→ Use ${rec.weight}lbs this session</span>`:''}
+        </span>
+      </div>`;
+    }
+
+    // Progress indicator: if all reps hit THIS session and rated
+    let progressBadge='';
+    if(cr && allRepsClean(key,eS,eW,ex.rg)){
+      if(cr!=='crusher'){
+        const inc=weightIncrement(ex.name);
+        progressBadge=`<span style="font-size:10px;color:var(--success);font-weight:700;margin-left:6px;">+${inc}lbs next ✓</span>`;
+      } else {
+        progressBadge=`<span style="font-size:10px;color:var(--warning);font-weight:700;margin-left:6px;">hold weight</span>`;
+      }
+    } else if(cr && !allRepsClean(key,eS,eW,ex.rg)){
+      progressBadge=`<span style="font-size:10px;color:var(--muted);font-weight:600;margin-left:6px;">keep building</span>`;
+    }
+
+    const card=document.createElement('div');
+    card.className='exercise-card'+(isDone?' done':'');
+
+    const hdr=document.createElement('div');hdr.className='exercise-header';
+    hdr.innerHTML=`
+      <div style="flex:1;min-width:0;">
+        <div class="exercise-name">${ex.name}${progressBadge}</div>
+        <div class="exercise-tags">
+          <span class="muscle-tag ${muscleStatus.cls}">${ex.muscle}${muscleStatus.label?' · '+muscleStatus.label:''}</span>
+        </div>
+      </div>
+      <div class="exercise-right">
+        <div class="badge-row">
+          <span class="badge sets">${eS}×</span>
+          <span class="badge weight">${eW}lbs</span>
+        </div>
+        <div class="done-check${isDone?' checked':''}" onclick="toggleDone('${key}',event)">
+          ${isDone?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
+        </div>
+      </div>`;
+    hdr.onclick=e=>{if(e.target.closest('.done-check'))return;document.getElementById('sb-'+key).classList.toggle('open');};
+
+    const body=document.createElement('div');body.className='sets-body';body.id='sb-'+key;
+    let setRows='';
+    for(let s=0;s<eS;s++){
+      const sk=`${key}s${s}`,sv=S.setData[sk]||{};
+      setRows+=`<div class="set-row">
+        <div class="set-num">${s+1}</div>
+        <input class="set-input" type="number" inputmode="decimal" placeholder="${eW}" value="${sv.weight||''}" onchange="saveSet('${sk}','weight',this.value);checkProgressNow('${key}','${ex.name}',${eS},'${ex.rg}',${eW})"/>
+        <input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="${sv.reps||''}" onchange="saveSet('${sk}','reps',this.value);checkProgressNow('${key}','${ex.name}',${eS},'${ex.rg}',${eW})"/>
+      </div>`;
+    }
+
+    body.innerHTML=`
+      <div class="rep-goal-hint">10RM target: ${ex.rg} · log actual reps each set</div>
+      <div class="sets-label">Set &nbsp; Weight (lbs) &nbsp;/&nbsp; Reps</div>
+      ${setRows}
+      <div id="progress-hint-${key}" style="font-size:11px;text-align:center;padding:6px 0;color:var(--muted);"></div>
+      <div class="rating-section">
+        <div class="rating-label">How did this feel?</div>
+        <div class="rating-btns">
+          <button class="rate-btn easy ${cr==='easy'?'selected':''}"     onclick="rateEx('${ratingKey}','easy','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">😎<br>Easy</button>
+          <button class="rate-btn moderate ${cr==='moderate'?'selected':''}" onclick="rateEx('${ratingKey}','moderate','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">💪<br>Moderate</button>
+          <button class="rate-btn hard ${cr==='hard'?'selected':''}"     onclick="rateEx('${ratingKey}','hard','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">🔥<br>Hard</button>
+          <button class="rate-btn crusher ${cr==='crusher'?'selected':''}"   onclick="rateEx('${ratingKey}','crusher','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">💀<br>Crusher</button>
+        </div>
+      </div>`;
+
+    card.appendChild(hdr);
+    if(recHtml){const el=document.createElement('div');el.innerHTML=recHtml;card.appendChild(el.firstElementChild);}
+    card.appendChild(body);
+    cont.appendChild(card);
+  });
+}
+
+function checkProgressNow(key,exName,sets,rg,eW){
+  // live feedback while logging reps
+  const hint=document.getElementById('progress-hint-'+key);
+  if(!hint) return;
+  const clean=allRepsClean(key,sets,eW,rg);
+  const inc=weightIncrement(exName);
+  if(clean){
+    hint.textContent=`✓ All reps hit — rate this set and you'll be ready for ${eW+inc}lbs next session`;
+    hint.style.color='var(--success)';
+  } else {
+    const target=targetReps(rg);
+    hint.textContent=`Target: ${target}+ reps each set to earn a weight increase`;
+    hint.style.color='var(--muted)';
+  }
+}
+
+function rateEx(ratingKey,rating,key,exName,eW,eS,rg){
+  S.ratings[ratingKey]=rating;
+  // If all reps clean and not crusher → update 10RM to current weight and queue next weight
+  const clean=allRepsClean(key,eS,eW,rg);
+  if(clean && rating!=='crusher'){
+    const inc=weightIncrement(exName);
+    set10RM(exName, eW+inc); // next session's 10RM
+  } else if(clean && rating==='crusher'){
+    set10RM(exName, eW); // hold
+  } else if(rating==='crusher'){
+    const newW=Math.round((eW*0.95)/2.5)*2.5;
+    set10RM(exName, newW); // drop
+  }
+  save();renderExercises();
+}
+
+function applyRec(key,exName,weight,sets){
+  S.customWeights[key]=weight;
+  S.customSets[key]=sets;
+  set10RM(exName,weight);
+  save();renderExercises();
+}
+
+function toggleDone(key,e){
+  e.stopPropagation();S.doneExercises[key]=!S.doneExercises[key];save();renderExercises();updateHome();
+}
+function saveSet(sk,field,val){if(!S.setData[sk])S.setData[sk]={};S.setData[sk][field]=val;save();}
+
+// WEIGHT
+function logWeight(){
+  const input=document.getElementById('weight-input'),val=parseFloat(input.value);
+  if(isNaN(val)||val<50||val>800){alert('Enter a valid weight.');return;}
+  const today=todayStr(),idx=S.weightLog.findIndex(e=>e.date===today);
+  if(idx>=0)S.weightLog[idx].weight=val;
+  else{S.weightLog.push({date:today,weight:val});S.weightLog.sort((a,b)=>a.date.localeCompare(b.date));}
+  input.value='';save();renderWeightPage();
+}
+function deleteEntry(date){
+  if(!confirm('Delete this entry?'))return;
+  S.weightLog=S.weightLog.filter(e=>e.date!==date);save();renderWeightPage();
+}
+function renderWeightPage(){
+  const color=PHASE_COLORS[S.phase];
+  document.getElementById('phase-dot').style.background=color;
+  const pl=document.getElementById('phase-pill-label');pl.textContent=S.phase;pl.style.color=color;
+  if(S.weightLog.length){
+    const first=S.weightLog[0],last=S.weightLog[S.weightLog.length-1];
+    document.getElementById('w-start').innerHTML=`${first.weight} <span>lbs</span>`;
+    document.getElementById('w-current').innerHTML=`${last.weight} <span>lbs</span>`;
+    const lost=first.weight-last.weight;
+    const tl=document.getElementById('w-total-lost');
+    tl.innerHTML=`${Math.abs(lost).toFixed(1)} <span>lbs ${lost>=0?'lost':'gained'}</span>`;
+    tl.style.color=lost>=0?'var(--success)':'var(--accent3)';
+  }
+  const wl=getThisWeekLoss(),wcard=document.getElementById('weekly-progress-card');
+  if(wl!==null){
+    wcard.style.display='block';
+    document.getElementById('week-lost-val').textContent=`${Math.abs(wl).toFixed(1)} lbs ${wl>=0?'lost':'gained'}`;
+    document.getElementById('week-progress-fill').style.width=Math.min(100,Math.max(0,wl*100))+'%';
+  } else {wcard.style.display='none';}
+  const hcard=document.getElementById('history-list-card'),hlist=document.getElementById('history-list');
+  if(S.weightLog.length){
+    hcard.style.display='block';
+    const recent=[...S.weightLog].reverse().slice(0,21);
+    hlist.innerHTML=recent.map((e,i)=>{
+      const prev=recent[i+1];let dH='';
+      if(prev){const delta=prev.weight-e.weight,cls=delta>0?'delta-down':delta<0?'delta-up':'delta-same',sym=delta>0?'▼':delta<0?'▲':'–';dH=`<span class="history-delta ${cls}">${sym}${Math.abs(delta).toFixed(1)}</span>`;}
+      const dl=new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      return `<div class="history-row"><span class="history-date">${dl}</span>${dH}<span class="history-weight">${e.weight} lbs</span><button class="history-del" onclick="deleteEntry('${e.date}')">✕</button></div>`;
+    }).join('');
+  } else {hcard.style.display='none';}
+  renderChart();renderPhaseAlert('weight-alert');
+}
+function renderChart(){
+  const canvas=document.getElementById('weightChart'),empty=document.getElementById('chart-empty');
+  if(S.weightLog.length<3){canvas.style.display='none';empty.style.display='block';return;}
+  canvas.style.display='block';empty.style.display='none';
+  const recent=S.weightLog.slice(-30),weights=recent.map(e=>e.weight);
+  const labels=recent.map(e=>new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+  const minW=Math.min(...weights)-2,maxW=Math.max(...weights)+2;
+  const ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1;
+  canvas.width=canvas.offsetWidth*dpr;canvas.height=160*dpr;ctx.scale(dpr,dpr);
+  const W=canvas.offsetWidth,H=160,pL=44,pR=12,pT=12,pB=28;
+  ctx.clearRect(0,0,W,H);
+  const tx=i=>pL+(i/(recent.length-1||1))*(W-pL-pR),ty=v=>pT+(1-(v-minW)/(maxW-minW))*(H-pT-pB);
+  ctx.strokeStyle='#2a2a3d';ctx.lineWidth=1;
+  for(let t=0;t<=4;t++){const v=minW+(t/4)*(maxW-minW),y=ty(v);ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();ctx.fillStyle='#6b6b8a';ctx.font='10px DM Sans,sans-serif';ctx.textAlign='right';ctx.fillText(v.toFixed(0),pL-4,y+3);}
+  const grad=ctx.createLinearGradient(0,pT,0,H-pB);grad.addColorStop(0,'rgba(232,255,71,0.15)');grad.addColorStop(1,'rgba(232,255,71,0)');
+  ctx.beginPath();ctx.moveTo(tx(0),ty(weights[0]));for(let i=1;i<recent.length;i++)ctx.lineTo(tx(i),ty(weights[i]));ctx.lineTo(tx(recent.length-1),H-pB);ctx.lineTo(tx(0),H-pB);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.moveTo(tx(0),ty(weights[0]));for(let i=1;i<recent.length;i++)ctx.lineTo(tx(i),ty(weights[i]));ctx.strokeStyle='#e8ff47';ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
+  weights.forEach((w,i)=>{ctx.beginPath();ctx.arc(tx(i),ty(w),3,0,Math.PI*2);ctx.fillStyle='#e8ff47';ctx.fill();});
+  ctx.fillStyle='#6b6b8a';ctx.font='10px DM Sans,sans-serif';ctx.textAlign='center';
+  [0,Math.floor((recent.length-1)/2),recent.length-1].forEach(i=>ctx.fillText(labels[i],tx(i),H-pB+16));
+}
+
+// PHASE MODAL
+let _pp=null;
+function openPhaseConfirm(toPhase){
+  _pp=toPhase;
+  document.getElementById('modal-title').textContent=`MOVE TO ${toPhase.toUpperCase()}?`;
+  document.getElementById('modal-body').textContent=`2 weeks without 1 lb loss on ${S.phase}. Switch to ${toPhase}?`;
+  document.getElementById('modal-btns').innerHTML=`<button class="modal-btn confirm" onclick="confirmPhase()">YES, SWITCH</button><button class="modal-btn cancel" onclick="closeModal()">NOT YET</button>`;
+  document.getElementById('phase-modal').classList.add('open');
+}
+function openPhaseModal(){
+  _pp=null;
+  document.getElementById('modal-title').textContent='SELECT PHASE';
+  document.getElementById('modal-body').textContent='Manually set your current nutrition phase.';
+  document.getElementById('modal-btns').innerHTML=PHASES.map(p=>`<button class="modal-btn phase-opt ${p===S.phase?'cur':''}" onclick="setPhase('${p}')">${p}${p===S.phase?' ✓':''}</button>`).join('')+`<button class="modal-btn cancel" onclick="closeModal()">Cancel</button>`;
+  document.getElementById('phase-modal').classList.add('open');
+}
+function setPhase(p){S.phase=p;S.macroPhase=p;save();closeModal();renderWeightPage();updateHome();buildPhaseBtns();}
+function confirmPhase(){if(_pp){S.phase=_pp;S.macroPhase=_pp;_pp=null;save();}closeModal();renderWeightPage();updateHome();buildPhaseBtns();}
+function closeModal(){document.getElementById('phase-modal').classList.remove('open');}
+
+// MACROS
+function buildPhaseBtns(){
+  const c=document.getElementById('phase-btns');c.innerHTML='';
+  PHASES.forEach(p=>{const b=document.createElement('button');b.className='sel-btn'+(p===S.macroPhase?' active':'');b.textContent=p;b.onclick=()=>{S.macroPhase=p;save();buildPhaseBtns();renderMeals();};c.appendChild(b);});
+}
+function buildTTBtns(){
+  const c=document.getElementById('training-type-btns');c.innerHTML='';
+  ['First Thing','After 1 Meal','After 2 Meals','After 3 Meals'].forEach(t=>{const b=document.createElement('button');b.className='training-type-btn'+(t===S.trainingType?' active':'');b.textContent=t;b.onclick=()=>{S.trainingType=t;save();buildTTBtns();renderMeals();};c.appendChild(b);});
+}
+// Parse a macro target value like "75g healthy carbs" → {amount:75, unit:'g', type:'carbs'}
+// Fat serving conversion: 1 serving = 15g fat (RP standard)
+const FAT_G_PER_SERVING=15;
+function parseServings(val){
+  const m=val.match(/^(\d+)\/(\d+)\s*serving/i);if(m) return parseFloat(m[1])/parseFloat(m[2]);
+  const m2=val.match(/^(\d+(?:\.\d+)?)\s*serving/i);if(m2) return parseFloat(m2[1]);
+  return null;
+}
+
+function parseMacroTarget(val, label){
+  if(!val||val==='—') return null;
+  const lbl=label.toLowerCase();
+  let type='carbs';
+  if(lbl.includes('protein')) type='protein';
+  else if(lbl.includes('fat')) type='fat';
+  else if(lbl.includes('carb')) type='carbs';
+
+  // Try grams or oz
+  const m=val.match(/(\d+(?:\.\d+)?)\s*(g|oz)/i);
+  if(m){
+    let amount=parseFloat(m[1]);
+    const unit=m[2].toLowerCase();
+    if(unit==='oz') amount=Math.round(amount*28.35);
+    return {amount, unit:'g', type, raw:val};
+  }
+  // Try serving-based fats
+  const servings=parseServings(val);
+  if(servings!==null && type==='fat'){
+    const amount=Math.round(servings*FAT_G_PER_SERVING);
+    return {amount, unit:'g', type, raw:val, fromServings:true, servings};
+  }
+  return null;
+}
+
+let _calcTarget=null; // {amount, unit, type, macroLabel}
+
+function openCalc(macroType, targetVal, macroLabel){
+  const parsed=parseMacroTarget(targetVal, macroLabel);
+  if(!parsed) return;
+
+  // Convert oz to grams for protein (8oz = 227g)
+  let targetG=parsed.amount;
+  let displayTarget=targetVal;
+  if(parsed.unit==='oz'){ targetG=Math.round(parsed.amount*28.35); displayTarget=`${parsed.amount}oz (${targetG}g)`; }
+
+  _calcTarget={targetG, type:parsed.type, macroLabel, displayTarget};
+
+  const typeLabels={protein:'Protein',carbs:'Carbs',fat:'Fat'};
+  document.getElementById('calc-title').textContent=`HOW MUCH TO USE`;
+  document.getElementById('calc-target-label').textContent=`Target: ${displayTarget} of ${macroLabel.toLowerCase()}`;
+  document.getElementById('calc-macro-label').textContent=`${typeLabels[parsed.type]} per serving (g)`;
+  document.getElementById('calc-serving').value='';
+  document.getElementById('calc-macro-per').value='';
+  document.getElementById('calc-result').innerHTML='<div style="color:var(--muted);font-size:13px;">Enter the two numbers above</div>';
+  document.getElementById('calc-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('calc-serving').focus(),300);
+}
+
+function runCalc(){
+  if(!_calcTarget) return;
+  const servingG=parseFloat(document.getElementById('calc-serving').value);
+  const macroPerServing=parseFloat(document.getElementById('calc-macro-per').value);
+  const res=document.getElementById('calc-result');
+
+  if(isNaN(servingG)||isNaN(macroPerServing)||servingG<=0||macroPerServing<=0){
+    res.innerHTML='<div style="color:var(--muted);font-size:13px;">Enter the two numbers above</div>';
+    return;
+  }
+
+  // How many grams of food to hit target macro
+  const gramsNeeded=Math.round((_calcTarget.targetG/macroPerServing)*servingG);
+  const servingsNeeded=(_calcTarget.targetG/macroPerServing).toFixed(2);
+  const macroPerG=(macroPerServing/servingG).toFixed(2);
+
+  // Other macros context (pasta example: also has protein, fat)
+  let noteHtml='';
+  if(gramsNeeded>400) noteHtml=`<div class="calc-result-note">⚠️ That's a large amount — double check the label numbers.</div>`;
+
+  res.innerHTML=`
+    <div class="calc-result-amount">${gramsNeeded}</div>
+    <div class="calc-result-unit">grams of food</div>
+    <div class="calc-result-breakdown">
+      ${servingsNeeded} servings · ${macroPerG}g ${_calcTarget.type} per gram of food<br>
+      Hits your <strong>${_calcTarget.displayTarget}</strong> target
+    </div>
+    ${noteHtml}`;
+}
+
+function closeCalc(){
+  document.getElementById('calc-modal').classList.remove('open');
+  _calcTarget=null;
+}
+
+// ── FOOD DATABASE ─────────────────────────────────────────────
+// All values per 100g. source: RP cheatsheets + USDA for carbs.
+// protein/carbs/fat in grams, calories, rp:true = from RP sheet
+const FOODS=[
+  // ── PROTEINS (from RP Protein Cheatsheet) ──
+  {name:'Chicken Breast (Raw)',           cat:'Protein', cal:120, protein:30,  carbs:0,  fat:4,  rp:true},
+  {name:'Chicken Breast (Cooked)',        cat:'Protein', cal:165, protein:35,  carbs:0,  fat:4,  rp:true},
+  {name:'Chicken Thigh (Raw)',            cat:'Protein', cal:177, protein:26,  carbs:0,  fat:9,  rp:true},
+  {name:'Chicken Thigh (Cooked, w skin)', cat:'Protein', cal:229, protein:23,  carbs:0,  fat:14, rp:true},
+  {name:'Ground Chicken (Raw)',           cat:'Protein', cal:172, protein:26,  carbs:0,  fat:8,  rp:true},
+  {name:'Ground Chicken (Cooked)',        cat:'Protein', cal:185, protein:30,  carbs:0,  fat:9,  rp:true},
+  {name:'Ground Turkey (Raw)',            cat:'Protein', cal:172, protein:26,  carbs:0,  fat:8,  rp:true},
+  {name:'Ground Turkey (Cooked)',         cat:'Protein', cal:185, protein:30,  carbs:0,  fat:9,  rp:true},
+  {name:'Turkey Breast (Raw)',            cat:'Protein', cal:104, protein:27,  carbs:0,  fat:2,  rp:true},
+  {name:'Turkey Breast (Cooked)',         cat:'Protein', cal:135, protein:30,  carbs:0,  fat:1,  rp:true},
+  {name:'Turkey Bacon',                   cat:'Protein', cal:218, protein:20,  carbs:2,  fat:11, rp:true},
+  {name:'Ground Beef 80/20 (Raw)',        cat:'Protein', cal:254, protein:23,  carbs:0,  fat:20, rp:true},
+  {name:'Ground Beef 90/10 (Raw)',        cat:'Protein', cal:176, protein:27,  carbs:0,  fat:10, rp:true},
+  {name:'Ground Beef 90/10 (Cooked)',     cat:'Protein', cal:196, protein:30,  carbs:0,  fat:12, rp:true},
+  {name:'Flank Steak (Raw)',              cat:'Protein', cal:158, protein:25,  carbs:0,  fat:7,  rp:true},
+  {name:'Flank Steak (Cooked)',           cat:'Protein', cal:192, protein:30,  carbs:0,  fat:9,  rp:true},
+  {name:'Tuna (Canned in Water)',         cat:'Protein', cal:116, protein:30,  carbs:0,  fat:1,  rp:true},
+  {name:'Tuna (Raw)',                     cat:'Protein', cal:132, protein:27,  carbs:0,  fat:1,  rp:true},
+  {name:'Tilapia',                        cat:'Protein', cal:96,  protein:21,  carbs:0,  fat:2,  rp:true},
+  {name:'Cod',                            cat:'Protein', cal:82,  protein:18,  carbs:0,  fat:1,  rp:true},
+  {name:'Halibut',                        cat:'Protein', cal:110, protein:21,  carbs:0,  fat:3,  rp:true},
+  {name:'Salmon',                         cat:'Protein', cal:208, protein:20,  carbs:0,  fat:13, rp:true},
+  {name:'Shrimp (Raw)',                   cat:'Protein', cal:99,  protein:24,  carbs:0,  fat:1,  rp:true},
+  {name:'Shrimp (Cooked)',                cat:'Protein', cal:99,  protein:27,  carbs:0,  fat:1,  rp:true},
+  {name:'Scallops',                       cat:'Protein', cal:69,  protein:15,  carbs:3,  fat:1,  rp:true},
+  {name:'Lobster',                        cat:'Protein', cal:89,  protein:18,  carbs:1,  fat:1,  rp:true},
+  {name:'Egg Whites',                     cat:'Protein', cal:52,  protein:10,  carbs:1,  fat:0,  rp:true},
+  {name:'Whole Eggs',                     cat:'Protein', cal:155, protein:13,  carbs:1,  fat:11, rp:true},
+  {name:'Deli Turkey',                    cat:'Protein', cal:104, protein:26,  carbs:2,  fat:3,  rp:true},
+  {name:'Deli Ham (Regular)',             cat:'Protein', cal:145, protein:21,  carbs:2,  fat:5,  rp:true},
+  {name:'Deli Ham (Extra Lean)',          cat:'Protein', cal:107, protein:27,  carbs:1,  fat:2,  rp:true},
+  {name:'Venison (Ground, Raw)',          cat:'Protein', cal:158, protein:27,  carbs:0,  fat:5,  rp:true},
+  {name:'Venison (Ground, Cooked)',       cat:'Protein', cal:187, protein:33,  carbs:0,  fat:6,  rp:true},
+  {name:'Venison (Loin, Cooked)',         cat:'Protein', cal:150, protein:30,  carbs:0,  fat:3,  rp:true},
+  {name:'Moose (Raw)',                    cat:'Protein', cal:102, protein:27,  carbs:0,  fat:2,  rp:true},
+  {name:'Moose (Cooked)',                 cat:'Protein', cal:130, protein:33,  carbs:0,  fat:2,  rp:true},
+  {name:'Whey Protein Powder',            cat:'Protein', cal:400, protein:80,  carbs:8,  fat:5,  rp:false},
+  {name:'Casein Protein Powder',          cat:'Protein', cal:380, protein:80,  carbs:4,  fat:3,  rp:false},
+  {name:'Tofu (Firm)',                    cat:'Protein', cal:76,  protein:9,   carbs:2,  fat:4,  rp:true},
+  {name:'Tofu (Extra Firm)',              cat:'Protein', cal:94,  protein:10,  carbs:2,  fat:5,  rp:true},
+
+  // ── FATS (from RP Fats Cheatsheet) ──
+  {name:'Peanut Butter (Natural)',        cat:'Fats', cal:588, protein:25, carbs:20, fat:50, rp:true},
+  {name:'Almond Butter',                  cat:'Fats', cal:614, protein:21, carbs:19, fat:56, rp:true},
+  {name:'Cashew Butter',                  cat:'Fats', cal:587, protein:18, carbs:28, fat:57, rp:true},
+  {name:'Sunflower Butter',               cat:'Fats', cal:617, protein:17, carbs:19, fat:55, rp:true},
+  {name:'Walnut Butter',                  cat:'Fats', cal:654, protein:15, carbs:14, fat:65, rp:true},
+  {name:'Butter',                         cat:'Fats', cal:717, protein:1,  carbs:0,  fat:81, rp:true},
+  {name:'Ghee',                           cat:'Fats', cal:900, protein:0,  carbs:0,  fat:99, rp:true},
+  {name:'Olive Oil',                      cat:'Fats', cal:884, protein:0,  carbs:0,  fat:100,rp:true},
+  {name:'Canola Oil',                     cat:'Fats', cal:884, protein:0,  carbs:0,  fat:100,rp:true},
+  {name:'Avocado Oil',                    cat:'Fats', cal:884, protein:0,  carbs:0,  fat:100,rp:true},
+  {name:'Avocado',                        cat:'Fats', cal:160, protein:2,  carbs:9,  fat:15, rp:true},
+  {name:'Almonds',                        cat:'Fats', cal:579, protein:21, carbs:22, fat:50, rp:true},
+  {name:'Peanuts',                        cat:'Fats', cal:567, protein:26, carbs:16, fat:49, rp:true},
+  {name:'Cashews',                        cat:'Fats', cal:553, protein:18, carbs:30, fat:44, rp:true},
+  {name:'Pistachios',                     cat:'Fats', cal:562, protein:20, carbs:28, fat:45, rp:true},
+  {name:'Walnuts',                        cat:'Fats', cal:654, protein:15, carbs:14, fat:65, rp:true},
+  {name:'Pecans',                         cat:'Fats', cal:691, protein:9,  carbs:14, fat:72, rp:true},
+  {name:'Macadamia Nuts',                 cat:'Fats', cal:718, protein:8,  carbs:14, fat:75, rp:true},
+  {name:'Cheddar Cheese',                 cat:'Fats', cal:403, protein:25, carbs:1,  fat:48, rp:true},
+  {name:'Swiss Cheese',                   cat:'Fats', cal:380, protein:28, carbs:5,  fat:46, rp:true},
+  {name:'American Cheese',                cat:'Fats', cal:371, protein:20, carbs:8,  fat:48, rp:true},
+  {name:'Blue Cheese',                    cat:'Fats', cal:353, protein:21, carbs:2,  fat:46, rp:true},
+  {name:'Feta Cheese',                    cat:'Fats', cal:264, protein:14, carbs:4,  fat:21, rp:true},
+  {name:'Provolone Cheese',               cat:'Fats', cal:352, protein:26, carbs:2,  fat:45, rp:true},
+  {name:'Dark Chocolate (45-59%)',        cat:'Fats', cal:546, protein:5,  carbs:60, fat:31, rp:true},
+  {name:'Dark Chocolate (70-85%)',        cat:'Fats', cal:598, protein:8,  carbs:46, fat:43, rp:true},
+  {name:'Black Olives (pitted)',          cat:'Fats', cal:116, protein:1,  carbs:6,  fat:11, rp:true},
+  {name:'Green Olives (pitted)',          cat:'Fats', cal:145, protein:1,  carbs:4,  fat:15, rp:true},
+  {name:'Kalamata Olives (pitted)',       cat:'Fats', cal:145, protein:1,  carbs:4,  fat:14, rp:true},
+  {name:'Half and Half',                  cat:'Fats', cal:130, protein:3,  carbs:4,  fat:12, rp:true},
+  {name:'Light Cream',                    cat:'Fats', cal:196, protein:3,  carbs:4,  fat:19, rp:true},
+  {name:'Coconut Milk',                   cat:'Fats', cal:230, protein:2,  carbs:6,  fat:24, rp:true},
+
+  // ── CARBS (USDA-matched to RP detail level) ──
+  // Grains — dry
+  {name:'Oats (Rolled, Dry)',             cat:'Carbs', cal:389, protein:17, carbs:66, fat:7,  rp:false},
+  {name:'Cream of Wheat (Dry)',           cat:'Carbs', cal:370, protein:11, carbs:76, fat:2,  rp:false},
+  {name:'White Rice (Dry)',               cat:'Carbs', cal:365, protein:7,  carbs:80, fat:1,  rp:false},
+  {name:'Brown Rice (Dry)',               cat:'Carbs', cal:370, protein:8,  carbs:77, fat:3,  rp:false},
+  {name:'Jasmine Rice (Dry)',             cat:'Carbs', cal:365, protein:7,  carbs:80, fat:1,  rp:false},
+  {name:'Pasta (Dry)',                    cat:'Carbs', cal:371, protein:13, carbs:74, fat:2,  rp:false},
+  {name:'Whole Wheat Pasta (Dry)',        cat:'Carbs', cal:348, protein:13, carbs:71, fat:2,  rp:false},
+  {name:'Quinoa (Dry)',                   cat:'Carbs', cal:368, protein:14, carbs:64, fat:6,  rp:false},
+  {name:'Barley (Dry)',                   cat:'Carbs', cal:354, protein:12, carbs:73, fat:2,  rp:false},
+  {name:'Farro (Dry)',                    cat:'Carbs', cal:340, protein:15, carbs:67, fat:3,  rp:false},
+  {name:'Couscous (Dry)',                 cat:'Carbs', cal:376, protein:13, carbs:78, fat:1,  rp:false},
+  // Grains — cooked
+  {name:'Oats (Cooked)',                  cat:'Carbs', cal:71,  protein:2,  carbs:12, fat:2,  rp:false},
+  {name:'Cream of Wheat (Cooked)',        cat:'Carbs', cal:57,  protein:2,  carbs:12, fat:0,  rp:false},
+  {name:'White Rice (Cooked)',            cat:'Carbs', cal:130, protein:3,  carbs:28, fat:0,  rp:false},
+  {name:'Brown Rice (Cooked)',            cat:'Carbs', cal:123, protein:3,  carbs:26, fat:1,  rp:false},
+  {name:'Pasta (Cooked)',                 cat:'Carbs', cal:158, protein:6,  carbs:31, fat:1,  rp:false},
+  {name:'Whole Wheat Pasta (Cooked)',     cat:'Carbs', cal:124, protein:5,  carbs:26, fat:1,  rp:false},
+  {name:'Quinoa (Cooked)',                cat:'Carbs', cal:120, protein:4,  carbs:22, fat:2,  rp:false},
+  // Potatoes & starchy veg
+  {name:'Sweet Potato (Raw)',             cat:'Carbs', cal:86,  protein:2,  carbs:20, fat:0,  rp:false},
+  {name:'Sweet Potato (Cooked, Baked)',   cat:'Carbs', cal:90,  protein:2,  carbs:21, fat:0,  rp:false},
+  {name:'White Potato (Raw)',             cat:'Carbs', cal:77,  protein:2,  carbs:17, fat:0,  rp:false},
+  {name:'White Potato (Baked, no skin)',  cat:'Carbs', cal:93,  protein:2,  carbs:21, fat:0,  rp:false},
+  {name:'Corn (Kernels)',                 cat:'Carbs', cal:86,  protein:3,  carbs:19, fat:1,  rp:false},
+  // Bread & crackers
+  {name:'Whole Wheat Bread',             cat:'Carbs', cal:247, protein:13, carbs:41, fat:4,  rp:false},
+  {name:'White Bread',                   cat:'Carbs', cal:265, protein:9,  carbs:49, fat:3,  rp:false},
+  {name:'Whole Grain Bread',             cat:'Carbs', cal:252, protein:11, carbs:43, fat:4,  rp:false},
+  {name:'Rice Cakes (plain)',            cat:'Carbs', cal:387, protein:8,  carbs:82, fat:3,  rp:false},
+  // Legumes
+  {name:'Black Beans (Canned, drained)', cat:'Carbs', cal:91,  protein:6,  carbs:16, fat:0,  rp:false},
+  {name:'Lentils (Cooked)',              cat:'Carbs', cal:116, protein:9,  carbs:20, fat:0,  rp:false},
+  {name:'Chickpeas (Canned, drained)',   cat:'Carbs', cal:139, protein:7,  carbs:23, fat:2,  rp:false},
+  // Fruits
+  {name:'Banana',                        cat:'Carbs', cal:89,  protein:1,  carbs:23, fat:0,  rp:false},
+  {name:'Apple',                         cat:'Carbs', cal:52,  protein:0,  carbs:14, fat:0,  rp:false},
+  {name:'Orange',                        cat:'Carbs', cal:47,  protein:1,  carbs:12, fat:0,  rp:false},
+  {name:'Mango',                         cat:'Carbs', cal:60,  protein:1,  carbs:15, fat:0,  rp:false},
+  {name:'Blueberries',                   cat:'Carbs', cal:57,  protein:1,  carbs:14, fat:0,  rp:false},
+  {name:'Grapes',                        cat:'Carbs', cal:67,  protein:1,  carbs:17, fat:0,  rp:false},
+  {name:'Pineapple',                     cat:'Carbs', cal:50,  protein:1,  carbs:13, fat:0,  rp:false},
+  {name:'Strawberries',                  cat:'Carbs', cal:32,  protein:1,  carbs:8,  fat:0,  rp:false},
+  // Workout shake carbs
+  {name:'Gatorade Powder',               cat:'Carbs', cal:380, protein:0,  carbs:96, fat:0,  rp:false},
+  {name:'Orange Juice',                  cat:'Carbs', cal:45,  protein:1,  carbs:10, fat:0,  rp:false},
+  {name:'Apple Juice',                   cat:'Carbs', cal:46,  protein:0,  carbs:11, fat:0,  rp:false},
+  {name:'Grape Juice',                   cat:'Carbs', cal:60,  protein:1,  carbs:15, fat:0,  rp:false},
+  // Veggies (low macro, volume foods)
+  {name:'Broccoli',                      cat:'Veggies', cal:34, protein:3, carbs:7,  fat:0, rp:false},
+  {name:'Spinach',                       cat:'Veggies', cal:23, protein:3, carbs:4,  fat:0, rp:false},
+  {name:'Green Beans',                   cat:'Veggies', cal:31, protein:2, carbs:7,  fat:0, rp:false},
+  {name:'Zucchini',                      cat:'Veggies', cal:17, protein:1, carbs:3,  fat:0, rp:false},
+  {name:'Bell Pepper',                   cat:'Veggies', cal:31, protein:1, carbs:6,  fat:0, rp:false},
+  {name:'Asparagus',                     cat:'Veggies', cal:20, protein:2, carbs:4,  fat:0, rp:false},
+  {name:'Cauliflower',                   cat:'Veggies', cal:25, protein:2, carbs:5,  fat:0, rp:false},
+  {name:'Mushrooms',                     cat:'Veggies', cal:22, protein:3, carbs:3,  fat:0, rp:false},
+  {name:'Cucumber',                      cat:'Veggies', cal:15, protein:1, carbs:4,  fat:0, rp:false},
+  {name:'Cabbage',                       cat:'Veggies', cal:25, protein:1, carbs:6,  fat:0, rp:false},
+  {name:'Celery',                        cat:'Veggies', cal:16, protein:1, carbs:3,  fat:0, rp:false},
+  {name:'Tomato',                        cat:'Veggies', cal:18, protein:1, carbs:4,  fat:0, rp:false},
+  {name:'Onion',                         cat:'Veggies', cal:40, protein:1, carbs:9,  fat:0, rp:false},
+  {name:'Lettuce (Romaine)',             cat:'Veggies', cal:17, protein:1, carbs:3,  fat:0, rp:false},
+];
+
+let _foodTarget=null;
+
+function openFoodModal(macroType, targetVal, macroLabel, mealIdx, slotKey){
+  const parsed=parseMacroTarget(targetVal, macroLabel);
+  if(!parsed) return;
+  let targetG=parsed.amount;
+  _foodTarget={targetG, type:parsed.type, macroLabel, mealIdx, displayTarget:targetVal, slotKey};
+
+  document.getElementById('food-modal-title').textContent='FIND A FOOD';
+  document.getElementById('food-modal-target').textContent=`Target: ${targetVal} of ${macroLabel.toLowerCase()}`;
+  document.getElementById('food-search-input').value='';
+  document.getElementById('food-result-wrap').style.display='none';
+
+  const defaults=FOODS.filter(f=>f.cat===catForType(parsed.type)).slice(0,7);
+  renderFoodList(defaults);
+  document.getElementById('food-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('food-search-input').focus(),300);
+}
+
+function catForType(type){
+  if(type==='protein') return 'Protein';
+  if(type==='fat') return 'Fats';
+  return 'Carbs';
+}
+
+function searchFoods(query){
+  document.getElementById('food-result-wrap').style.display='none';
+  if(!query.trim()){
+    renderFoodList(FOODS.filter(f=>f.cat===catForType(_foodTarget.type)).slice(0,7));
+    return;
+  }
+  const q=query.toLowerCase();
+  // RP foods first, then fallback
+  const rp=FOODS.filter(f=>f.name.toLowerCase().includes(q)&&f.rp);
+  const fb=FOODS.filter(f=>f.name.toLowerCase().includes(q)&&!f.rp);
+  renderFoodList([...rp,...fb].slice(0,10));
+}
+
+function renderFoodList(foods){
+  const list=document.getElementById('food-list');
+  if(!foods.length){
+    list.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0;text-align:center;">No match — try the label calc or a different spelling</div>';
+    return;
+  }
+  list.innerHTML=foods.map((f,i)=>{
+    const idx=FOODS.indexOf(f);
+    const rpBadge=f.rp?'<span style="font-size:9px;background:#e8ff4722;color:var(--accent);border-radius:4px;padding:1px 5px;margin-left:4px;font-weight:700;">RP</span>':'';
+    return `<div class="food-item" onclick="selectFood(${idx})">
+      <div style="flex:1;min-width:0;">
+        <div class="food-item-name">${f.name}${rpBadge}</div>
+        <div class="food-item-macros">Per 100g · P:${f.protein}g · C:${f.carbs}g · F:${f.fat}g · ${f.cal}cal</div>
+      </div>
+      <div class="food-item-arrow">›</div>
+    </div>`;
+  }).join('');
+}
+
+// ── SLOT FOOD STACKING ───────────────────────────────────────
+// S.slotFoods[slotKey] = [{foodIdx, pct}, ...]
+function getSlotKey(mealIdx, label){ return `${todayStr()}:${S.macroPhase}:${mealIdx}:${label.replace(/\s+/g,'_')}`; }
+function getSlotFoods(k){ if(!S.slotFoods)S.slotFoods={};return S.slotFoods[k]||[]; }
+
+function addFoodToSlot(slotKey, foodIdx){
+  if(!S.slotFoods)S.slotFoods={};
+  const cur=S.slotFoods[slotKey]||[];
+  if(cur.find(e=>e.foodIdx===foodIdx)){closeFoodModal();return;}
+  cur.push({foodIdx, pct:0, manualG:null});
+  rebalance(cur.filter(e=>e.manualG==null));
+  S.slotFoods[slotKey]=cur;
+  const mealIdx=parseInt(slotKey.split(':')[2]);
+  save();closeFoodModal();renderMeals(new Set([`mb${mealIdx}`]));updateTracker();
+}
+
+function addManualEntry(){
+  if(!_foodTarget)return;
+  const name=document.getElementById('manual-name').value.trim()||'Custom food';
+  const grams=parseFloat(document.getElementById('manual-grams').value);
+  if(isNaN(grams)||grams<=0){alert('Enter the number of grams.');return;}
+  if(!S.slotFoods)S.slotFoods={};
+  const slotKey=_foodTarget.slotKey;
+  const cur=S.slotFoods[slotKey]||[];
+  const customId=Date.now();
+  cur.push({foodIdx:null, customName:name, customId, pct:0, manualG:grams});
+  S.slotFoods[slotKey]=cur;
+  const mealIdx=parseInt(slotKey.split(':')[2]);
+  save();closeFoodModal();renderMeals(new Set([`mb${mealIdx}`]));updateTracker();
+}
+
+function removeFoodFromSlot(slotKey,entryId){
+  if(!S.slotFoods||!S.slotFoods[slotKey])return;
+  S.slotFoods[slotKey]=S.slotFoods[slotKey].filter(e=>String(e.foodIdx)!==String(entryId)&&String(e.customId)!==String(entryId).replace('c_',''));
+  const pctItems=S.slotFoods[slotKey].filter(e=>e.manualG==null);
+  if(pctItems.length) rebalance(pctItems);
+  const mealIdx=parseInt(slotKey.split(':')[2]);
+  save();renderMeals(new Set([`mb${mealIdx}`]));updateTracker();
+}
+
+function setManualGram(slotKey,entryId,val){
+  if(!S.slotFoods||!S.slotFoods[slotKey])return;
+  const g=parseFloat(val);
+  const entry=S.slotFoods[slotKey].find(e=>String(e.foodIdx)===String(entryId)||('c_'+e.customId)===String(entryId));
+  if(!entry)return;
+  entry.manualG=isNaN(g)||g<=0?null:g;
+  save();updateTracker();
+  // Re-render just the slot div without rebuilding the whole page
+  renderSlot(slotKey);
+}
+
+function updateSlotPct(slotKey,entryId,newPct){
+  if(!S.slotFoods||!S.slotFoods[slotKey])return;
+  const items=S.slotFoods[slotKey].filter(e=>e.manualG==null);
+  const me=items.find(e=>String(e.foodIdx)===String(entryId)||('c_'+e.customId)===String(entryId));
+  if(!me)return;
+  const old=me.pct; me.pct=Math.max(1,Math.min(99,newPct));
+  const delta=me.pct-old;
+  const others=items.filter(e=>e!==me);
+  const tot=others.reduce((s,e)=>s+e.pct,0);
+  if(tot>0) others.forEach(e=>{e.pct=Math.max(1,Math.round(e.pct-(delta*(e.pct/tot))));});
+  const total=items.reduce((s,e)=>s+e.pct,0);
+  if(total!==100&&items.length){const fix=items.find(e=>e!==me)||me;fix.pct+=100-total;}
+  save();renderSlot(slotKey);updateTracker();
+}
+
+// ── DAILY TRACKER ─────────────────────────────────────────────
+function computeActualGramsForSlot(slotKey, type){
+  const foods=getSlotFoods(slotKey);
+  if(!foods.length)return 0;
+  const el=document.getElementById('slot-'+slotKey.replace(/[:']/g,'_').replace(/\s+/g,'_'));
+  const targetG=el?parseFloat(el.dataset.targetg||0):0;
+  const pinned=foods.filter(e=>e.manualG!=null).reduce((s,e)=>s+e.manualG,0);
+  const freePct=foods.filter(e=>e.manualG==null).reduce((s,e)=>s+e.pct,0)||1;
+  let total=0;
+  foods.forEach(entry=>{
+    if(entry.manualG!=null){
+      // For manual entries we know the exact grams of food, but we need the macro grams
+      // For custom (no foodIdx) we treat the manual grams as the macro grams directly
+      if(entry.foodIdx!=null){
+        const food=FOODS[entry.foodIdx];
+        const macroVal=type==='protein'?food.protein:type==='carbs'?food.carbs:food.fat;
+        total+=Math.round((entry.manualG/100)*macroVal);
+      } else {
+        // Custom manual: the user entered grams of the macro itself
+        total+=entry.manualG;
+      }
+    } else if(entry.foodIdx!=null){
+      const food=FOODS[entry.foodIdx];
+      const macroVal=type==='protein'?food.protein:type==='carbs'?food.carbs:food.fat;
+      const remaining=Math.max(0,targetG-pinned);
+      const myMacroG=remaining*(entry.pct/freePct);
+      total+=Math.round(myMacroG);
+    }
+  });
+  return total;
+}
+
+function updateTracker(){
+  const meals=macroPlans[S.macroPhase]?.[S.trainingType];
+  if(!meals)return;
+  const today=todayStr();
+  let totalP=0,totalC=0,totalF=0;
+  let goalP=0,goalC=0,goalF=0;
+
+  meals.forEach((m,idx)=>{
+    const labelTypes=[
+      {label:'Protein',type:'protein',val:m.p},
+      {label:'Veggies',type:'carbs',val:m.v},
+      {label:'Healthy_Fats',type:'fat',val:m.f},
+      {label:'Healthy_Carbs',type:'carbs',val:m.c},
+      {label:'Workout_Shake_Carbs',type:'carbs',val:m.w},
+    ];
+    labelTypes.forEach(({label,type,val})=>{
+      if(!val||val==='—')return;
+      const parsed=parseMacroTarget(val,label.replace(/_/g,' '));
+      if(!parsed)return;
+      const g=parsed.amount;
+      if(type==='protein') goalP+=g;
+      else if(type==='fat') goalF+=g;
+      else goalC+=g;
+
+      const slotKey=`${today}:${S.macroPhase}:${idx}:${label}`;
+      const eaten=computeActualGramsForSlot(slotKey,type);
+      if(type==='protein') totalP+=eaten;
+      else if(type==='fat') totalF+=eaten;
+      else totalC+=eaten;
+    });
+  });
+
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=Math.round(val);};
+  const setW=(id,pct)=>{const el=document.getElementById(id);if(el)el.style.width=Math.min(100,Math.round(pct))+'%';};
+  set('tr-p-eaten',totalP);set('tr-p-goal',goalP);setW('tr-p-bar',goalP>0?totalP/goalP*100:0);
+  set('tr-c-eaten',totalC);set('tr-c-goal',goalC);setW('tr-c-bar',goalC>0?totalC/goalC*100:0);
+  set('tr-f-eaten',totalF);set('tr-f-goal',goalF);setW('tr-f-bar',goalF>0?totalF/goalF*100:0);
+}
+
+function rebalance(items){
+  const n=items.length,even=Math.floor(100/n),rem=100-(even*n);
+  items.forEach((e,i)=>{e.pct=even+(i===0?rem:0);});
+}
+
+function renderSlot(slotKey){
+  const safeKey=slotKey.replace(/[:']/g,'_').replace(/\s+/g,'_');
+  const el=document.getElementById('slot-'+safeKey);
+  if(!el)return;
+  const targetG=parseFloat(el.dataset.targetg||0);
+  const type=el.dataset.type;const color=el.dataset.color;
+  el.innerHTML=buildSlotHtml(slotKey,targetG,type,color);
+}
+
+function buildSlotHtml(slotKey,targetG,type,color){
+  const foods=getSlotFoods(slotKey);
+  if(!foods.length) return '';
+  // Calculate total manually-pinned grams so percentage-based items split the rest
+  const pinned=foods.filter(e=>e.manualG!=null).reduce((s,e)=>s+e.manualG,0);
+  const freePct=foods.filter(e=>e.manualG==null).reduce((s,e)=>s+e.pct,0)||1;
+
+  return foods.map((entry)=>{
+    const {foodIdx,pct,manualG}=entry;
+    const food=FOODS[foodIdx]; // null for manual entries
+    const name=food?food.name:(entry.customName||'Custom food');
+    const rpBadge=food&&food.rp?'<span style="font-size:9px;background:#e8ff4722;color:var(--accent);border-radius:3px;padding:1px 4px;margin-left:4px;">RP</span>':'';
+
+    // Grams of food to weigh out
+    let gramsFood=0;
+    if(manualG!=null){
+      gramsFood=manualG; // user set this directly
+    } else if(food){
+      const macroVal=type==='protein'?food.protein:type==='carbs'?food.carbs:food.fat;
+      const remaining=Math.max(0,targetG-pinned);
+      const myMacroG=remaining*(pct/freePct);
+      gramsFood=macroVal>0?Math.round((myMacroG/macroVal)*100):0;
+    }
+
+    const safeSlot=slotKey.replace(/[:']/g,'_').replace(/\s+/g,'_');
+    const entryId=food?foodIdx:`c_${entry.customId}`;
+
+    return `<div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:6px;border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${manualG==null?'6':'0'}px;">
+        <span style="font-size:13px;font-weight:600;flex:1;min-width:0;">${name}${rpBadge}</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <input class="gram-input" type="number" inputmode="decimal" value="${gramsFood}"
+            onchange="setManualGram('${slotKey}','${entryId}',this.value)"
+            oninput="setManualGram('${slotKey}','${entryId}',this.value)"
+            title="Tap to edit grams"/>
+          <span style="font-size:13px;color:var(--muted);">g</span>
+          <button onclick="removeFoodFromSlot('${slotKey}','${entryId}')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0 0 0 4px;">✕</button>
+        </div>
+      </div>
+      ${manualG==null?`<div style="display:flex;align-items:center;gap:8px;">
+        <input type="range" min="1" max="99" value="${pct}" style="flex:1;accent-color:${color};"
+          oninput="updateSlotPct('${slotKey}','${entryId}',parseInt(this.value))"
+          onchange="updateSlotPct('${slotKey}','${entryId}',parseInt(this.value))"/>
+        <span style="font-size:12px;color:var(--muted);min-width:36px;text-align:right;font-weight:600;">${pct}%</span>
+      </div>`:'<div style="font-size:10px;color:var(--muted);margin-top:2px;">Manual entry — edit grams above</div>'}
+    </div>`;
+  }).join('');
+}
+
+function selectFood(idx){
+  if(!_foodTarget)return;
+  const food=FOODS[idx];
+  const type=_foodTarget.type;
+  const macroVal=type==='protein'?food.protein:type==='carbs'?food.carbs:food.fat;
+  if(macroVal===0){
+    document.getElementById('food-result-wrap').style.display='block';
+    document.getElementById('food-result-amount').textContent='—';
+    document.getElementById('food-result-label').textContent=`${food.name} has no ${type} — try another food`;
+    document.getElementById('food-result-macros').innerHTML='';
+    return;
+  }
+  addFoodToSlot(_foodTarget.slotKey, idx);
+}
+
+function closeFoodModal(){
+  document.getElementById('food-modal').classList.remove('open');
+  _foodTarget=null;
+}
+
+function renderMeals(keepOpen){
+  // Snapshot which meals are currently open before wiping DOM
+  if(!keepOpen){
+    keepOpen=new Set();
+    document.querySelectorAll('.meal-body.open').forEach(el=>keepOpen.add(el.id));
+  }
+  const c=document.getElementById('meals-container');c.innerHTML='';
+  const meals=macroPlans[S.macroPhase][S.trainingType];
+  const today=todayStr();
+  if(!S.mealDone)S.mealDone={};
+  if(!S.slotFoods)S.slotFoods={};
+
+  meals.forEach((m,idx)=>{
+    const items=[
+      {icon:'🥩',label:'Protein',         val:m.p,color:'#ff6b47'},
+      {icon:'🥦',label:'Veggies',          val:m.v,color:'#47ff9b'},
+      {icon:'🥑',label:'Healthy Fats',     val:m.f,color:'#ffb347'},
+      {icon:'🍚',label:'Healthy Carbs',    val:m.c,color:'#47c4ff'},
+    ];
+    if(m.w&&m.w!=='—') items.push({icon:'🥤',label:'Workout Shake Carbs',val:m.w,color:'#e8ff47'});
+
+    const mealDoneKey=`meal:${today}:${S.macroPhase}:${idx}`;
+    const isDone=!!S.mealDone[mealDoneKey];
+    const card=document.createElement('div');
+    card.className='meal-card'+(isDone?' meal-complete':'');
+
+    const rowsHtml=items.map(it=>{
+      const parsed=parseMacroTarget(it.val,it.label);
+      const slotKey=getSlotKey(idx,it.label);
+      const safeKey=slotKey.replace(/[:']/g,'_').replace(/\s+/g,'_');
+      const targetG=parsed?parsed.amount:0;
+      const slotFoods=getSlotFoods(slotKey);
+      const type=parsed?parsed.type:(it.label.toLowerCase().includes('fat')?'fat':it.label.toLowerCase().includes('protein')?'protein':'carbs');
+
+      const calcBtn=parsed?`<button class="calc-btn" onclick="event.stopPropagation();openCalc('${parsed.type}','${it.val}','${it.label}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+        Label calc</button>`:'';
+      const foodBtn=parsed?`<button class="food-btn" onclick="event.stopPropagation();openFoodModal('${type}','${it.val}','${it.label}',${idx},'${slotKey}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        ${slotFoods.length?'+ Add food':'Find food'}</button>`:'';
+
+      const servingNote=parsed&&parsed.fromServings?` <span style="font-size:11px;color:var(--muted);">(${parsed.amount}g fat)</span>`:'';
+
+      return `<div class="macro-row">
+        <div class="macro-icon" style="background:${it.color}22;">${it.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="macro-label">${it.label}</div>
+          <div class="macro-value">${it.val}${servingNote}</div>
+          <div id="slot-${safeKey}" data-targetg="${targetG}" data-type="${type}" data-color="${it.color}">${buildSlotHtml(slotKey,targetG,type,it.color)}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${calcBtn}${foodBtn}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const mealTplKey=`meal:${S.macroPhase}:${idx}`;
+    const mealTplCount=getAllTemplates().length;
+    const checkSvg=isDone?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
+    card.innerHTML=`<div class="meal-header" onclick="toggleMeal('mb${idx}',this.querySelector('.meal-arrow'))">
+      <span class="meal-number">${m.meal}</span>
+      <span class="meal-timing">${m.time}</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+        <button class="tpl-btn save" onclick="event.stopPropagation();openSaveMealTemplate(${idx},'${mealTplKey}')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save</button>
+        <button class="tpl-btn load" onclick="event.stopPropagation();openLoadMealTemplate(${idx},'${mealTplKey}')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          ${mealTplCount?`Load (${mealTplCount})`:'Load'}</button>
+        <span class="meal-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+    </div>
+    <div class="meal-body" id="mb${idx}">${rowsHtml}
+      <div class="meal-done-bar">
+        <span class="meal-done-label">${isDone?'✓ Meal logged':'Did you eat this meal?'}</span>
+        <div class="meal-done-check${isDone?' checked':''}" onclick="toggleMealDone('${mealDoneKey}')">${checkSvg}</div>
+      </div>
+    </div>`;
+    c.appendChild(card);
+    // Restore open state
+    if(keepOpen.has(`mb${idx}`)){
+      card.querySelector('.meal-body').classList.add('open');
+      card.querySelector('.meal-arrow').classList.add('open');
+    }
+  });
+  updateTracker();
+}
+
+// ── MEAL TEMPLATES ────────────────────────────────────────────
+// S.mealTemplates[mealTplKey] = [{name, slots:{slotKey_suffix: [{foodIdx,pct}]}}]
+// mealTplKey = `meal:${macroPhase}:${mealIdx}` — persists across days
+
+let _tplContext=null;
+
+// Shared template library — one pool for all meals, all days
+const SHARED_TPL_KEY='mealTemplates:shared';
+function getAllTemplates(){ if(!S.mealTemplates)S.mealTemplates={};return S.mealTemplates[SHARED_TPL_KEY]||[]; }
+
+function getMealSlotData(mealIdx){
+  if(!S.slotFoods) return {};
+  const prefix=`:${S.macroPhase}:${mealIdx}:`;
+  const result={};
+  Object.keys(S.slotFoods).forEach(k=>{
+    if(k.includes(prefix)&&S.slotFoods[k].length){
+      const label=k.split(prefix)[1];
+      result[label]=S.slotFoods[k].map(e=>({foodIdx:e.foodIdx,pct:e.pct}));
+    }
+  });
+  return result;
+}
+
+function openSaveMealTemplate(mealIdx, mealTplKey){
+  const slots=getMealSlotData(mealIdx);
+  const hasFood=Object.values(slots).some(f=>f.length);
+  if(!hasFood){alert('Add foods to this meal first, then save it as a template.');return;}
+  _tplContext={mealIdx, mode:'save', slots};
+  document.getElementById('tpl-modal-title').textContent='SAVE MEAL TEMPLATE';
+  document.getElementById('tpl-modal-sub').textContent='Saved templates can be loaded into any meal';
+  document.getElementById('tpl-name-input').value='';
+  document.getElementById('tpl-save-section').style.display='block';
+  document.getElementById('tpl-load-section').style.display='none';
+  document.getElementById('tpl-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('tpl-name-input').focus(),300);
+}
+
+function confirmSaveTemplate(){
+  if(!_tplContext) return;
+  const name=document.getElementById('tpl-name-input').value.trim();
+  if(!name){alert('Give it a name first.');return;}
+  if(!S.mealTemplates)S.mealTemplates={};
+  if(!S.mealTemplates[SHARED_TPL_KEY])S.mealTemplates[SHARED_TPL_KEY]=[];
+  S.mealTemplates[SHARED_TPL_KEY].push({name, slots:_tplContext.slots});
+  save();closeTplModal();
+  renderMeals(new Set([`mb${_tplContext.mealIdx}`]));
+}
+
+function openLoadMealTemplate(mealIdx, mealTplKey){
+  if(!S.mealTemplates)S.mealTemplates={};
+  const templates=getAllTemplates();
+  _tplContext={mealIdx, mode:'load'};
+  document.getElementById('tpl-modal-title').textContent='LOAD MEAL TEMPLATE';
+  document.getElementById('tpl-modal-sub').textContent='Load any saved template into this meal';
+  document.getElementById('tpl-save-section').style.display='none';
+  document.getElementById('tpl-load-section').style.display='block';
+  const list=document.getElementById('tpl-list');
+  if(!templates.length){
+    list.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">No saved templates yet.<br>Build out any meal and tap Save.</div>';
+  } else {
+    list.innerHTML=templates.map((t,i)=>{
+      const preview=Object.values(t.slots).flat()
+        .map(f=>FOODS[f.foodIdx]?FOODS[f.foodIdx].name.split(' ')[0]:'')
+        .filter(Boolean).slice(0,5).join(', ');
+      return `<div class="tpl-item" onclick="applyMealTemplate(${i})">
+        <div style="min-width:0;flex:1;">
+          <div class="tpl-item-name">${t.name}</div>
+          <div class="tpl-item-foods">${preview}</div>
+        </div>
+        <button class="tpl-item-del" onclick="event.stopPropagation();deleteMealTemplate(${i})">✕</button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('tpl-modal').classList.add('open');
+}
+
+function applyMealTemplate(tplIdx){
+  if(!_tplContext) return;
+  const tpl=getAllTemplates()[tplIdx];
+  if(!tpl) return;
+  if(!S.slotFoods)S.slotFoods={};
+  const today=todayStr();
+  Object.keys(tpl.slots).forEach(labelKey=>{
+    const slotKey=`${today}:${S.macroPhase}:${_tplContext.mealIdx}:${labelKey}`;
+    S.slotFoods[slotKey]=tpl.slots[labelKey].map(e=>({foodIdx:e.foodIdx,pct:e.pct}));
+  });
+  save();closeTplModal();
+  renderMeals(new Set([`mb${_tplContext.mealIdx}`]));
+}
+
+function deleteMealTemplate(tplIdx){
+  if(!_tplContext||!S.mealTemplates||!S.mealTemplates[SHARED_TPL_KEY]) return;
+  S.mealTemplates[SHARED_TPL_KEY].splice(tplIdx,1);
+  save();
+  openLoadMealTemplate(_tplContext.mealIdx);
+}
+
+function closeTplModal(){
+  document.getElementById('tpl-modal').classList.remove('open');
+  _tplContext=null;
+}
+
+function toggleMealDone(key){
+  if(!S.mealDone)S.mealDone={};
+  S.mealDone[key]=!S.mealDone[key];
+  save();renderMeals();
+}
+
+function toggleMeal(id,arrow){document.getElementById(id).classList.toggle('open');arrow.classList.toggle('open');}
+
+// INIT
+buildWeekBtns();buildDayBtns();renderExercises();
+buildPhaseBtns();buildTTBtns();renderMeals();
+updateHome();
+</script>
+</body>
+</html>
