@@ -93,10 +93,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .set-input::placeholder{color:var(--muted);font-size:12px;}
 
 /* RATING SECTION */
-.rating-section{padding:10px 16px 14px;border-top:1px solid var(--border);}
-.rating-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:500;}
-.rating-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.rate-btn{padding:8px 4px;border-radius:10px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.15s;line-height:1.3;}
+.rating-section{padding:12px 16px 18px;border-top:1px solid var(--border);}
+.rating-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:500;}
+.rating-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rate-btn{padding:16px 4px;border-radius:12px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;line-height:1.4;width:100%;}
 .rate-btn.easy{color:#47ff9b;}.rate-btn.easy.selected{background:#47ff9b;color:#000;border-color:#47ff9b;}
 .rate-btn.moderate{color:#47c4ff;}.rate-btn.moderate.selected{background:#47c4ff;color:#000;border-color:#47c4ff;}
 .rate-btn.hard{color:#ffb347;}.rate-btn.hard.selected{background:#ffb347;color:#000;border-color:#ffb347;}
@@ -238,6 +238,35 @@ canvas#weightChart{width:100%!important;height:160px!important;}
 .modal-btn.cancel{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
 .modal-btn.phase-opt{background:var(--surface2);color:var(--text);border:1px solid var(--border);font-size:16px;}
 .modal-btn.phase-opt.cur{border-color:var(--accent);color:var(--accent);}
+
+/* EXERCISE SWAP + VIDEO */
+.swap-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#a78bfa;background:none;border:1px solid #a78bfa44;border-radius:100px;padding:3px 8px;cursor:pointer;margin-left:6px;vertical-align:middle;}
+.video-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#f472b6;background:none;border:1px solid #f472b644;border-radius:100px;padding:3px 8px;cursor:pointer;margin-left:4px;vertical-align:middle;text-decoration:none;}
+.swap-sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 0;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;}
+.swap-scrollable{flex:1;overflow-y:auto;padding-bottom:40px;}
+.swap-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s;}
+.swap-item.current{border-color:#a78bfa;}
+.swap-item:active{border-color:var(--accent);}
+.swap-item-name{font-size:14px;font-weight:600;}
+.swap-item-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.swap-select-btn{background:#a78bfa;border:none;border-radius:8px;color:#000;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;}
+.swap-video-link{color:#f472b6;font-size:12px;font-weight:700;text-decoration:none;padding:6px 10px;border:1px solid #f472b644;border-radius:8px;}
+.swap-cancel-btn{width:100%;padding:14px;background:none;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;margin:12px 0 0;}
+
+/* PROGRESS TAB */
+.progress-empty{text-align:center;color:var(--muted);padding:48px 16px;font-size:14px;}
+.pr-card{background:var(--surface);border-radius:16px;margin-bottom:12px;overflow:hidden;border:1px solid var(--border);}
+.pr-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.pr-name{font-size:15px;font-weight:700;}
+.pr-current{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);line-height:1;}
+.pr-delta{font-size:11px;font-weight:700;margin-top:1px;text-align:right;}
+.pr-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+.pr-body.open{display:block;}
+.pr-chart{width:100%;height:80px;margin:12px 0 8px;}
+.pr-history{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;}
+.pr-hist-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--border);}
+.pr-hist-row:last-child{border-bottom:none;}
+.pr-hist-weight{font-weight:700;color:var(--text);}
 </style>
 </head>
 <body>
@@ -250,7 +279,7 @@ canvas#weightChart{width:100%!important;height:160px!important;}
     <div class="hero-day" id="today-day-label">DAY 1</div>
     <div class="hero-week" id="today-week-label">Week 1</div>
     <div class="hero-exercises" id="today-exercises-list"></div>
-    <button class="go-btn" onclick="goToWorkout()">START WORKOUT</button>
+    <button class="go-btn" id="go-btn" onclick="goToWorkout()">START WORKOUT</button>
   </div>
   <div class="stat-row">
     <div class="stat-card"><div class="stat-label">Current Phase</div><div class="stat-value" id="home-phase" style="font-size:20px;">Base</div></div>
@@ -390,6 +419,12 @@ canvas#weightChart{width:100%!important;height:160px!important;}
   <div class="note-card">Drink a gulp of your training shake (protein + carbs) between exercises. Finish the rest immediately after your workout.</div>
 </div>
 
+
+<div class="page" id="page-progress">
+  <div class="page-header"><div class="page-title">PROGRESS</div><div class="page-sub">10RM history</div></div>
+  <div id="progress-container"></div>
+</div>
+
 <!-- NAV -->
 <nav class="nav">
   <button class="nav-btn active" onclick="showPage('home',this)">
@@ -398,6 +433,9 @@ canvas#weightChart{width:100%!important;height:160px!important;}
   <button class="nav-btn" onclick="showPage('workout',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11M6.5 17.5h11M4 12h16M2 9.5l2 2.5-2 2.5M22 9.5l-2 2.5 2 2.5"/></svg>Workout
   </button>
+  <button class="nav-btn" onclick="showPage('progress',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Progress
+  </button>
   <button class="nav-btn" onclick="showPage('weight',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>Weight
   </button>
@@ -405,6 +443,28 @@ canvas#weightChart{width:100%!important;height:160px!important;}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>Macros
   </button>
 </nav>
+
+
+<!-- EXERCISE SWAP MODAL -->
+<div class="modal-overlay" id="swap-modal">
+  <div class="swap-sheet">
+    <div class="calc-title" id="swap-modal-title">SWAP EXERCISE</div>
+    <div class="calc-target" id="swap-modal-sub" style="margin-bottom:12px;"></div>
+    <div class="swap-scrollable">
+      <div id="swap-list"></div>
+    </div>
+    <button class="swap-cancel-btn" onclick="closeSwapModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- VOLUME INFO MODAL -->
+<div class="modal-overlay" id="vol-modal" onclick="closeVolModal()">
+  <div class="calc-sheet" onclick="event.stopPropagation()" style="max-height:85vh;overflow-y:auto;">
+    <div class="calc-title" id="vol-modal-title">VOLUME STATUS</div>
+    <div id="vol-modal-body" style="font-size:14px;line-height:1.7;color:var(--text);"></div>
+    <button class="calc-close-btn" onclick="closeVolModal()" style="margin-top:16px;">Got it</button>
+  </div>
+</div>
 
 <!-- MEAL TEMPLATE MODAL -->
 <div class="modal-overlay" id="tpl-modal">
@@ -541,14 +601,27 @@ function allRepsClean(key, effSets, effWeight, rg){
 
 // Get the stored 10RM weight for an exercise (persists across weeks/days)
 function get10RM(exName){ return S.tenRM&&S.tenRM[exName]!==undefined?S.tenRM[exName]:null; }
-function set10RM(exName,weight){ if(!S.tenRM)S.tenRM={};S.tenRM[exName]=weight;save(); }
+function set10RM(exName,weight){
+  if(!S.tenRM)S.tenRM={};
+  if(!S.tenRMHistory)S.tenRMHistory={};
+  const prev=S.tenRM[exName];
+  S.tenRM[exName]=weight;
+  // Log to history only if value actually changed
+  if(prev!==weight){
+    if(!S.tenRMHistory[exName])S.tenRMHistory[exName]=[];
+    S.tenRMHistory[exName].push({date:todayStr(),weight});
+    // Keep last 52 entries
+    if(S.tenRMHistory[exName].length>52) S.tenRMHistory[exName].shift();
+  }
+  save();
+}
 
 // Effective weight: 10RM override > custom session override > plan default
 function effWeight(key,ex){
   if(S.customWeights[key]!==undefined) return S.customWeights[key];
   const rm=get10RM(ex.name);
-  if(rm!==null) return rm;
-  return ex.weight;
+  if(rm!==null) return Math.round((rm*0.85)/2.5)*2.5; // working weight = ~85% of 10RM
+  return null; // no 10RM set yet
 }
 
 // Build recommendation for next session
@@ -607,16 +680,320 @@ function getPrevSessionData(exName){
 
 // RP-COMPLIANT 4-DAY PROGRAM
 // Week 1=MAV low, Week 2=mid MAV, Week 3=upper MAV, Week 4=peak (near MRV, deload next)
+
+const VIDEO_DB={
+  "Incline Push":[
+    {name:"Incline Medium Grip Bench Press",url:"https://youtu.be/zWRCV_td3I8"},
+    {name:"Incline Wide Grip Bench Press",url:"https://youtu.be/MDuOnEyof1w"},
+    {name:"Low Incline Dumbbell Press",url:"https://youtu.be/efDlxayx234"},
+    {name:"Incline Dumbbell Press",url:"https://youtu.be/LYZDsNv8kJ8"},
+    {name:"Incline Close Grip Bench Press",url:"https://youtu.be/2JIPv1E5a0I"},
+    {name:"Incline Machine Bench Press",url:"https://youtu.be/eaI0E6ZcwM4"},
+  ],
+  "Horizontal Push":[
+    {name:"Medium Grip Bench Press",url:"https://youtu.be/Dl-by6_vATQ"},
+    {name:"Wide Grip Bench Press",url:"https://youtu.be/ILToidt_G0U"},
+    {name:"Flat Dumbbell Bench Press",url:"https://youtu.be/20_pP7oaH34"},
+    {name:"Close Grip Bench Press",url:"https://youtu.be/3s_QUA4HcxI"},
+    {name:"Flat Machine Bench Press",url:"https://youtu.be/cg4tsxQ1BP4"},
+    {name:"Pushup",url:"https://youtu.be/TM_PeJIdQwE"},
+    {name:"Close Grip Pushup",url:"https://youtu.be/PFtO-p5VLO0"},
+  ],
+  "Chest Isolation":[
+    {name:"Flat Dumbbell Flye",url:"https://youtu.be/t2Kk-TOhq14"},
+    {name:"Incline Dumbbell Flye",url:"https://youtu.be/_GBEHrc_V5U"},
+    {name:"Cable Flye",url:"https://youtu.be/60Ai9_c60xg"},
+    {name:"High Cable Flye",url:"https://youtu.be/ipoTKasbDyQ"},
+    {name:"Machine Chest Flye",url:"https://youtu.be/6L7xI3jO_GU"},
+    {name:"Cable Incline Flye",url:"https://youtu.be/UPGRju60F60"},
+    {name:"Pec Dec Flye",url:"https://youtu.be/ZYM1mNayaeI"},
+  ],
+  "Chest Isolation or Triceps":[
+    {name:"Flat Dumbbell Flye",url:"https://youtu.be/t2Kk-TOhq14"},
+    {name:"Incline Dumbbell Flye",url:"https://youtu.be/_GBEHrc_V5U"},
+    {name:"Cable Flye",url:"https://youtu.be/60Ai9_c60xg"},
+    {name:"High Cable Flye",url:"https://youtu.be/ipoTKasbDyQ"},
+    {name:"Machine Chest Flye",url:"https://youtu.be/6L7xI3jO_GU"},
+    {name:"Cable Incline Flye",url:"https://youtu.be/UPGRju60F60"},
+    {name:"Pec Dec Flye",url:"https://youtu.be/ZYM1mNayaeI"},
+    {name:"Skullcrusher",url:"https://youtu.be/hJLXuvZd05w"},
+    {name:"EZ Bar Overhead Tricep Extension",url:"https://youtu.be/U3SkMY6jw5M"},
+    {name:"JM Press",url:"https://youtu.be/daSL236nYZs"},
+    {name:"Barbell Overhead Tricep Extension",url:"https://youtu.be/He-GN_4MAY4"},
+    {name:"Dips",url:"https://youtu.be/B48xWtzMHxk"},
+    {name:"Assisted Dips",url:"https://youtu.be/a5_JKN7j7Ug"},
+    {name:"Seated EZ Bar Overhead Tricep Extension",url:"https://youtu.be/pOX1m37rOWo"},
+    {name:"Dumbbell Skullcrusher",url:"https://youtu.be/TtXlapucVxM"},
+    {name:"Cable Overhead Tricep Extension",url:"https://youtu.be/B21LHpkamJM"},
+    {name:"Cable Tricep Pushdown",url:"https://youtu.be/B33bKk_r5PU"},
+    {name:"Cable Rope Pushdown",url:"https://youtu.be/tu2Q82-HMg0"},
+    {name:"Bar Skull",url:"https://youtu.be/gYbmiluG5Ho"},
+  ],
+  "Horizontal Pull":[
+    {name:"Barbell Bent Over Row",url:"https://youtu.be/o2qSVwxiFk4"},
+    {name:"Underhand EZ Bar Row",url:"https://youtu.be/ROIrNQJBKZ0"},
+    {name:"Row to Chest",url:"https://youtu.be/tRT-cLlXJZ0"},
+    {name:"1-Arm Dumbbell Row",url:"https://youtu.be/Wdv_3ojsPhU"},
+    {name:"Chest Supported Row",url:"https://youtu.be/4Idz7uwm3OU"},
+    {name:"Row Machine",url:"https://youtu.be/J44yAQ_LXXU"},
+    {name:"2-Arm Dumbbell Row",url:"https://youtu.be/o1yPuXatVRs"},
+    {name:"Cable Row",url:"https://youtu.be/y47HOtqxZkg"},
+  ],
+  "Vertical Pull":[
+    {name:"Wide-Grip Pulldown",url:"https://youtu.be/xyoFXl-k644"},
+    {name:"Parallel Pulldown",url:"https://youtu.be/uMjeHo2_EwM"},
+    {name:"Underhand Pulldown",url:"https://youtu.be/bxfHw1LvH24"},
+    {name:"Normal Grip Pulldown",url:"https://youtu.be/gQ179IUjMsQ"},
+    {name:"Narrow Grip Pulldown",url:"https://youtu.be/QzjjwxZOVdE"},
+    {name:"Overhand Pullup",url:"https://youtu.be/NF4nbNsqreQ"},
+    {name:"Parallel Pullup",url:"https://youtu.be/lFyDmuDjRts"},
+    {name:"Underhand Pullup",url:"https://youtu.be/SmRa30Jci54"},
+    {name:"Wide Grip Pullup",url:"https://youtu.be/HOWPPDueZY8"},
+    {name:"Assisted Overhand Pullup",url:"https://youtu.be/ghHW6sETs-I"},
+    {name:"Assisted Parallel Pullup",url:"https://youtu.be/UNo4yBbidG4"},
+    {name:"Assisted Underhand Pullup",url:"https://youtu.be/2PC8eYTte5w"},
+  ],
+  "Side Delts":[
+    {name:"Barbell Upright Row",url:"https://youtu.be/fbFISuP7Ezk"},
+    {name:"Dumbbell Upright Row",url:"https://youtu.be/KkpCTyjGlZo"},
+    {name:"Cable Upright Row",url:"https://youtu.be/FoZM6vuuKBc"},
+    {name:"Dumbbell Side Lateral Raise",url:"https://youtu.be/pg3hz43P09w"},
+    {name:"Dumbbell Lateral Raise",url:"https://youtu.be/pg3hz43P09w"},
+    {name:"Thumbs Down Lateral Raise",url:"https://youtu.be/7P2LTF73EOM"},
+  ],
+  "Rear Delts":[
+    {name:"Barbell Facepull",url:"https://youtu.be/BvX7g1yr1pY"},
+    {name:"Dumbbell Facepull",url:"https://youtu.be/d90AskSQcDc"},
+    {name:"Cable Facepull",url:"https://youtu.be/Ana4dJbCvxE"},
+    {name:"Face Pull",url:"https://youtu.be/Ana4dJbCvxE"},
+    {name:"Cable Rear Delt Fly",url:"https://youtu.be/c32OxRaEhxM"},
+    {name:"Dumbbell Rear Lateral Raise",url:"https://youtu.be/c32OxRaEhxM"},
+  ],
+  "Rear or Side Delts":[
+    {name:"Barbell Facepull",url:"https://youtu.be/BvX7g1yr1pY"},
+    {name:"Dumbbell Facepull",url:"https://youtu.be/d90AskSQcDc"},
+    {name:"Cable Facepull",url:"https://youtu.be/Ana4dJbCvxE"},
+    {name:"Face Pull",url:"https://youtu.be/Ana4dJbCvxE"},
+    {name:"Cable Rear Delt Fly",url:"https://youtu.be/c32OxRaEhxM"},
+    {name:"Dumbbell Rear Lateral Raise",url:"https://youtu.be/c32OxRaEhxM"},
+    {name:"Barbell Upright Row",url:"https://youtu.be/fbFISuP7Ezk"},
+    {name:"Dumbbell Upright Row",url:"https://youtu.be/KkpCTyjGlZo"},
+    {name:"Cable Upright Row",url:"https://youtu.be/FoZM6vuuKBc"},
+    {name:"Dumbbell Side Lateral Raise",url:"https://youtu.be/pg3hz43P09w"},
+    {name:"Thumbs Down Lateral Raise",url:"https://youtu.be/7P2LTF73EOM"},
+  ],
+  "Front Delts":[
+    {name:"Seated Barbell Shoulder Press",url:"https://youtu.be/dF9Pm_-2zmg"},
+    {name:"Standing Barbell Shoulder Press",url:"https://youtu.be/n9RZ6FEthGU"},
+    {name:"Seated Dumbbell Shoulder Press",url:"https://youtu.be/RGFdTZznnRs"},
+    {name:"Standing Dumbbell Shoulder Press",url:"https://youtu.be/Ax_6UXGQo7o"},
+    {name:"High Incline Dumbbell Press",url:"https://youtu.be/YIqmLutlM1g"},
+    {name:"Shoulder Press Machine",url:"https://youtu.be/W6kJbZeFssU"},
+  ],
+  "Incline Push or Front Delts":[
+    {name:"Incline Medium Grip Bench Press",url:"https://youtu.be/zWRCV_td3I8"},
+    {name:"Incline Wide Grip Bench Press",url:"https://youtu.be/MDuOnEyof1w"},
+    {name:"Low Incline Dumbbell Press",url:"https://youtu.be/efDlxayx234"},
+    {name:"Incline Dumbbell Press",url:"https://youtu.be/LYZDsNv8kJ8"},
+    {name:"Incline Close Grip Bench Press",url:"https://youtu.be/2JIPv1E5a0I"},
+    {name:"Incline Machine Bench Press",url:"https://youtu.be/eaI0E6ZcwM4"},
+    {name:"Seated Barbell Shoulder Press",url:"https://youtu.be/dF9Pm_-2zmg"},
+    {name:"Standing Barbell Shoulder Press",url:"https://youtu.be/n9RZ6FEthGU"},
+    {name:"Seated Dumbbell Shoulder Press",url:"https://youtu.be/RGFdTZznnRs"},
+    {name:"Standing Dumbbell Shoulder Press",url:"https://youtu.be/Ax_6UXGQo7o"},
+    {name:"High Incline Dumbbell Press",url:"https://youtu.be/YIqmLutlM1g"},
+    {name:"Shoulder Press Machine",url:"https://youtu.be/W6kJbZeFssU"},
+  ],
+  "Triceps":[
+    {name:"Cable Rope Pushdown",url:"https://youtu.be/tu2Q82-HMg0"},
+    {name:"Cable Tricep Pushdown",url:"https://youtu.be/B33bKk_r5PU"},
+    {name:"Skull Crusher",url:"https://youtu.be/hJLXuvZd05w"},
+    {name:"Skullcrusher",url:"https://youtu.be/hJLXuvZd05w"},
+    {name:"Dumbbell Skullcrusher",url:"https://youtu.be/TtXlapucVxM"},
+    {name:"EZ Bar Overhead Tricep Extension",url:"https://youtu.be/U3SkMY6jw5M"},
+    {name:"Overhead Tricep Extension",url:"https://youtu.be/U3SkMY6jw5M"},
+    {name:"Barbell Overhead Tricep Extension",url:"https://youtu.be/He-GN_4MAY4"},
+    {name:"Seated EZ Bar Overhead Tricep Extension",url:"https://youtu.be/pOX1m37rOWo"},
+    {name:"Cable Overhead Tricep Extension",url:"https://youtu.be/B21LHpkamJM"},
+    {name:"JM Press",url:"https://youtu.be/daSL236nYZs"},
+    {name:"Dips",url:"https://youtu.be/B48xWtzMHxk"},
+    {name:"Assisted Dips",url:"https://youtu.be/a5_JKN7j7Ug"},
+    {name:"Bar Skull",url:"https://youtu.be/gYbmiluG5Ho"},
+  ],
+  "Biceps":[
+    {name:"Barbell Curl",url:"https://youtu.be/tYpquedo9e0"},
+    {name:"EZ Curl",url:"https://youtu.be/MCjBeB844rU"},
+    {name:"EZ Bar Curl",url:"https://youtu.be/MCjBeB844rU"},
+    {name:"Preacher Curl",url:"https://youtu.be/GztM7atVgd8"},
+    {name:"Close Grip Barbell Curl",url:"https://youtu.be/GztM7atVgd8"},
+    {name:"2-Arm Dumbbell Curl",url:"https://youtu.be/yYB76DOBPsM"},
+    {name:"Cable Curl",url:"https://youtu.be/nW7w5vG6IIc"},
+    {name:"Incline Dumbbell Curl",url:"https://youtu.be/2jsTYbOkx1U"},
+    {name:"Dumbbell Twist Curl",url:"https://youtu.be/DcRJ3bLJuVw"},
+    {name:"Hammer Curl",url:"https://youtu.be/xsOm9xn83-8"},
+    {name:"Dumbbell Spider Curl",url:"https://youtu.be/y_GK6fn7raU"},
+    {name:"Alternating Dumbbell Curl",url:"https://youtu.be/S97e09rLmEU"},
+    {name:"Cable Rope Twist Curl",url:"https://youtu.be/sR_EdrSruyQ"},
+  ],
+  "Quads":[
+    {name:"High Bar Squat",url:"https://youtu.be/2-o_-HTPhv8"},
+    {name:"Close Stance Feet Forward Squats",url:"https://youtu.be/ppluAD4MHK8"},
+    {name:"Machine Feet Forward Squat",url:"https://youtu.be/SYji94GabJg"},
+    {name:"Leg Press",url:"https://youtu.be/mJSsWpuyiCM"},
+    {name:"Hack Squat",url:"https://youtu.be/SOyO4LHjhX4"},
+    {name:"Front Squat",url:"https://youtu.be/lNYA35p8XJQ"},
+    {name:"Front Squat (Alternate Grip)",url:"https://youtu.be/uFEPuNtHoOU"},
+  ],
+  "Hamstring Isolation":[
+    {name:"Lying Leg Curl",url:"https://youtu.be/m4KB9-Uo4Kc"},
+    {name:"Seated Leg Curl",url:"https://youtu.be/BHxrogNaKoo"},
+    {name:"Single-Leg Leg Curl",url:"https://youtu.be/SMln-yOUKSA"},
+  ],
+  "Hamstring Hip Hinge":[
+    {name:"Stiff-Legged Deadlift",url:"https://youtu.be/zbYgjREbdb0"},
+    {name:"High Bar Good Morning",url:"https://youtu.be/hzHJugCcT6g"},
+    {name:"Low Bar Good Morning",url:"https://youtu.be/Z3AC4mmiKhw"},
+    {name:"45 Degree Back Raise",url:"https://youtu.be/OMUGU1Vh8Ao"},
+  ],
+  "Glutes":[
+    {name:"Deficit Deadlift",url:"https://youtu.be/WWS1rPFPyiQ"},
+    {name:"Deadlift",url:"https://youtu.be/euEPxA3gsDo"},
+    {name:"Stiff-Legged Deadlift",url:"https://youtu.be/zbYgjREbdb0"},
+    {name:"Sumo Deadlift",url:"https://youtu.be/xp1IeyTOB4U"},
+    {name:"Hex Bar Deadlift",url:"https://youtu.be/f-_q_3tN6Yo"},
+    {name:"25s Deadlift",url:"https://youtu.be/7If7L0lAur8"},
+    {name:"Barbell Walking Lunge",url:"https://youtu.be/vNgwqFsVstY"},
+    {name:"Dumbbell Walking Lunge",url:"https://youtu.be/LRgZFHceZGo"},
+    {name:"Sumo Squat",url:"https://youtu.be/wjw-4R5VR20"},
+  ],
+  "Calves":[
+    {name:"Calves on Calf Machine",url:"https://youtu.be/wrPN51LyOUE"},
+    {name:"Stair Calves",url:"https://youtu.be/mucRuC4sEjQ"},
+    {name:"Calves on Leg Press",url:"https://youtu.be/oRRs1bGzimM"},
+    {name:"Smith Machine Calves",url:"https://youtu.be/IkrC1u5e-RQ"},
+  ],
+  "Traps":[
+    {name:"Dumbbell Shrug",url:"https://youtu.be/z3yCDRGrQTM"},
+    {name:"Barbell Shrug",url:"https://youtu.be/hR8aOS5LZjU"},
+    {name:"Barbell Bent Over Shrug",url:"https://youtu.be/6DiJh6_jeoo"},
+    {name:"Dumbbell Bent Over Shrug",url:"https://youtu.be/S3NIBLmlKaU"},
+  ],
+  "Abs":[
+    {name:"Machine Crunch",url:"https://youtu.be/GWeVF2aVk8g"},
+    {name:"Slant Board Sit-Up",url:"https://youtu.be/JYiWXFIikW4"},
+    {name:"Reaching Sit-Up",url:"https://youtu.be/ENaZCLrz8_c"},
+    {name:"V-Up",url:"https://youtu.be/vz97voWk3jU"},
+    {name:"Modified Candlestick",url:"https://youtu.be/sPIBL43Ds48"},
+    {name:"Hanging Knee Raise",url:"https://youtu.be/dmwMfjPQIP8"},
+    {name:"Hanging Leg Raise",url:"https://youtu.be/5p-vP_XyNaA"},
+    {name:"Hanging Strait Leg Raise",url:"https://youtu.be/5p-vP_XyNaA"},
+    {name:"Cable Crunch",url:"https://youtu.be/GWeVF2aVk8g"},
+    {name:"Ab Wheel",url:"https://youtu.be/vz97voWk3jU"},
+  ],
+};
+
+function getVideoUrl(name){
+
+  for(const exs of Object.values(VIDEO_DB)){
+    const m=exs.find(e=>e.name===name);
+    if(m) return m.url;
+  }
+  return null;
+}
+
+// ── EXERCISE SWAP ──────────────────────────────────────────────
+// S.exerciseSwaps[`d${dayIdx}e${exIdx}`] = newExerciseName
+// Cascades across all 4 weeks automatically
+
+let _swapContext=null;
+
+function getSwappedName(dayIdx, exIdx, defaultName){
+  const k=`d${dayIdx}e${exIdx}`;
+  return (S.exerciseSwaps&&S.exerciseSwaps[k])||defaultName;
+}
+
+function openSwapModal(dayIdx, exIdx, currentName, mvmt){
+  _swapContext={dayIdx, exIdx, currentName, mvmt};
+  document.getElementById('swap-modal-title').textContent='SWAP EXERCISE';
+  document.getElementById('swap-modal-sub').textContent=mvmt+' — pick one to use all 4 weeks';
+  const options=VIDEO_DB[mvmt]||VIDEO_DB[mvmt.replace(' or ',' ')] || [];
+  const list=document.getElementById('swap-list');
+  if(!options.length){
+    list.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">No alternatives found for '+muscle+'</div>';
+  } else {
+    list.innerHTML=options.map(ex=>{
+      const isCurrent=ex.name===currentName;
+      return `<div class="swap-item${isCurrent?' current':''}">
+        <span class="swap-item-name">${ex.name}${isCurrent?' ✓':''}</span>
+        <div class="swap-item-actions">
+          <a class="swap-video-link" href="${ex.url}" target="_blank">▶ Video</a>
+          <button class="swap-select-btn" onclick="selectSwap('${ex.name.replace(/'/g,"\\'")}')">Select</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('swap-modal').classList.add('open');
+}
+
+function selectSwap(newName){
+  if(!_swapContext) return;
+  if(!S.exerciseSwaps) S.exerciseSwaps={};
+  S.exerciseSwaps[`d${_swapContext.dayIdx}e${_swapContext.exIdx}`]=newName;
+  save();
+  closeSwapModal();
+  renderExercises();
+}
+
+function closeSwapModal(){
+  document.getElementById('swap-modal').classList.remove('open');
+  _swapContext=null;
+}
+
+// ── RP RATING → SETS PROGRESSION ──────────────────────────────
+// Maps: easy=1, moderate=0, hard=-1, crusher=-1
+function ratingToRP(r){ return r==='easy'?1:r==='hard'?-1:0; }
+
+// Get the RP rating value from the PREVIOUS week for a given exercise
+// Used to adjust sets for the current week
+function getRPRatingForWeek(dayIdx, exIdx, weekIdx){
+  if(weekIdx===0) return 0; // Week 1 has no prior rating
+  const prevWeek=weekIdx-1;
+  const prevKey=getExKey(prevWeek, dayIdx, exIdx);
+  // Find the exercise name (accounting for swaps)
+  const day=workoutData.days[dayIdx];
+  const defaultName=day.weeks[prevWeek].exercises[exIdx].name;
+  const exName=getSwappedName(dayIdx, exIdx, defaultName);
+  const ratingKey=`ex:${exName}:${prevKey}`;
+  const r=S.ratings[ratingKey]||'moderate';
+  return ratingToRP(r);
+}
+
+// Effective sets: base sets + RP rating adjustments from prior weeks
+function effSetsRP(dayIdx, exIdx, weekIdx){
+  if(!S.exerciseSwaps) S.exerciseSwaps={};
+  const day=workoutData.days[dayIdx];
+  const baseSets=day.weeks[weekIdx].exercises[exIdx].sets;
+  if(S.customSets[getExKey(weekIdx,dayIdx,exIdx)]!==undefined)
+    return S.customSets[getExKey(weekIdx,dayIdx,exIdx)];
+  // Add up rating deltas from all prior weeks
+  let sets=day.weeks[0].exercises[exIdx].sets; // start from week 1 base
+  for(let w=1;w<=weekIdx;w++){
+    const delta=getRPRatingForWeek(dayIdx,exIdx,w);
+    sets+=delta;
+  }
+  return Math.max(1, sets);
+}
+
 const workoutData={days:[
   {
     name:"Day 1",focus:"Chest / Back / Delts + Arms",
     weeks:[
       {week:1,exercises:[
-        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:175,rg:"3/fail"},
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:175,rg:"3/fail",mvmt:"Incline Push"},
         {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:45, rg:"3/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:130,rg:"3/fail"},
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:130,rg:"3/fail",mvmt:"Horizontal Pull"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail",mvmt:"Vertical Pull"},
         {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:95, rg:"3/fail"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:20, rg:"3/fail"},
         {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:3,weight:30, rg:"3/fail"},
@@ -624,36 +1001,36 @@ const workoutData={days:[
         {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:3,weight:55, rg:"3/fail"},
       ]},
       {week:2,exercises:[
-        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:185,rg:"3/fail"},
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:3,weight:185,rg:"3/fail",mvmt:"Incline Push"},
         {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:50, rg:"3/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:210,rg:"3/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail"},
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:145,rg:"3/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:210,rg:"3/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail",mvmt:"Horizontal Pull"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:145,rg:"3/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail",mvmt:"Side Delts"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:22, rg:"3/fail"},
         {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:3,weight:32, rg:"3/fail"},
         {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:3,weight:55, rg:"3/fail"},
         {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:3,weight:60, rg:"3/fail"},
       ]},
       {week:3,exercises:[
-        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:190,rg:"2/fail"},
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:190,rg:"2/fail",mvmt:"Incline Push"},
         {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:50, rg:"2/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:215,rg:"2/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:140,rg:"2/fail"},
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:100,rg:"2/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:215,rg:"2/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:140,rg:"2/fail",mvmt:"Horizontal Pull"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:100,rg:"2/fail",mvmt:"Side Delts"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:25, rg:"2/fail"},
         {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:4,weight:35, rg:"2/fail"},
         {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:3,weight:60, rg:"2/fail"},
         {name:"Reaching Sit-Up",                  muscle:"Abs",            sets:4,weight:60, rg:"2/fail"},
       ]},
       {week:4,exercises:[
-        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:195,rg:"1/fail"},
+        {name:"Incline Medium Grip Bench Press",  muscle:"Chest",          sets:4,weight:195,rg:"1/fail",mvmt:"Incline Push"},
         {name:"Flat Dumbbell Flye",               muscle:"Chest",          sets:3,weight:52, rg:"1/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:220,rg:"1/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:145,rg:"1/fail"},
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:105,rg:"1/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:220,rg:"1/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:4,weight:145,rg:"1/fail",mvmt:"Horizontal Pull"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:4,weight:105,rg:"1/fail",mvmt:"Side Delts"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:27, rg:"1/fail"},
         {name:"Incline Dumbbell Curl",            muscle:"Biceps",         sets:4,weight:37, rg:"1/fail"},
         {name:"Overhead Tricep Extension",        muscle:"Triceps",        sets:4,weight:62, rg:"1/fail"},
@@ -665,11 +1042,11 @@ const workoutData={days:[
     name:"Day 2",focus:"Legs / Shoulders / Triceps",
     weeks:[
       {week:1,exercises:[
-        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:275,rg:"3/fail"},
-        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:210,rg:"3/fail"},
-        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:155,rg:"3/fail"},
-        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:115,rg:"3/fail"},
-        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:115,rg:"3/fail"},
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:275,rg:"3/fail",mvmt:"Quads"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:210,rg:"3/fail",mvmt:"Quads"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:155,rg:"3/fail",mvmt:"Hamstring Isolation"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:115,rg:"3/fail",mvmt:"Calves"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:115,rg:"3/fail",mvmt:"Front Delts"},
         {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:3,weight:50, rg:"3/fail"},
         {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
         {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
@@ -677,11 +1054,11 @@ const workoutData={days:[
         {name:"Hanging Leg Raise",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
       ]},
       {week:2,exercises:[
-        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:290,rg:"3/fail"},
-        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:220,rg:"3/fail"},
-        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:165,rg:"3/fail"},
-        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:120,rg:"3/fail"},
-        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:120,rg:"3/fail"},
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:3,weight:290,rg:"3/fail",mvmt:"Quads"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:3,weight:220,rg:"3/fail",mvmt:"Quads"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:3,weight:165,rg:"3/fail",mvmt:"Hamstring Isolation"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:120,rg:"3/fail",mvmt:"Calves"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:3,weight:120,rg:"3/fail",mvmt:"Front Delts"},
         {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:3,weight:55, rg:"3/fail"},
         {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:3,weight:70, rg:"3/fail"},
         {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:70, rg:"3/fail"},
@@ -689,11 +1066,11 @@ const workoutData={days:[
         {name:"Hanging Leg Raise",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
       ]},
       {week:3,exercises:[
-        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:295,rg:"2/fail"},
-        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:225,rg:"2/fail"},
-        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:165,rg:"2/fail"},
-        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"2/fail"},
-        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"2/fail"},
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:295,rg:"2/fail",mvmt:"Quads"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:225,rg:"2/fail",mvmt:"Quads"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:165,rg:"2/fail",mvmt:"Hamstring Isolation"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"2/fail",mvmt:"Calves"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"2/fail",mvmt:"Front Delts"},
         {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:4,weight:60, rg:"2/fail"},
         {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:4,weight:70, rg:"2/fail"},
         {name:"Skull Crusher",                    muscle:"Triceps",        sets:3,weight:72, rg:"2/fail"},
@@ -701,11 +1078,11 @@ const workoutData={days:[
         {name:"Hanging Leg Raise",                muscle:"Abs",            sets:4,weight:0,  rg:"2/fail"},
       ]},
       {week:4,exercises:[
-        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:305,rg:"1/fail"},
-        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:230,rg:"1/fail"},
-        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:170,rg:"1/fail"},
-        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"1/fail"},
-        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"1/fail"},
+        {name:"High Bar Squat",                   muscle:"Quads",          sets:4,weight:305,rg:"1/fail",mvmt:"Quads"},
+        {name:"Close Stance Feet Forward Squats", muscle:"Quads",          sets:4,weight:230,rg:"1/fail",mvmt:"Quads"},
+        {name:"Lying Leg Curl",                   muscle:"Hamstrings",     sets:4,weight:170,rg:"1/fail",mvmt:"Hamstring Isolation"},
+        {name:"Calves on Calf Machine",           muscle:"Calves",         sets:6,weight:125,rg:"1/fail",mvmt:"Calves"},
+        {name:"Seated Barbell Shoulder Press",    muscle:"Front Delts",    sets:4,weight:125,rg:"1/fail",mvmt:"Front Delts"},
         {name:"Face Pull",                        muscle:"Rear/Side Delts",sets:4,weight:65, rg:"1/fail"},
         {name:"Cable Rope Pushdown",              muscle:"Triceps",        sets:4,weight:72, rg:"1/fail"},
         {name:"Skull Crusher",                    muscle:"Triceps",        sets:4,weight:75, rg:"1/fail"},
@@ -718,51 +1095,51 @@ const workoutData={days:[
     name:"Day 3",focus:"Back / Chest / Arms",
     weeks:[
       {week:1,exercises:[
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail"},
-        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:160,rg:"3/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:2,weight:130,rg:"3/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:140,rg:"3/fail",mvmt:"Vertical Pull"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:160,rg:"3/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:2,weight:130,rg:"3/fail",mvmt:"Horizontal Pull"},
         {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:3,weight:25, rg:"3/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail"},
-        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:175,rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:3,weight:200,rg:"3/fail",mvmt:"Horizontal Push"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:175,rg:"3/fail",mvmt:"Incline Push"},
         {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:3,weight:75, rg:"3/fail"},
-        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:135,rg:"3/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:135,rg:"3/fail",mvmt:"Horizontal Push"},
         {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:95, rg:"3/fail"},
         {name:"Cable Crunch",                     muscle:"Abs",            sets:3,weight:70, rg:"3/fail"},
       ]},
       {week:2,exercises:[
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:145,rg:"3/fail"},
-        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:170,rg:"3/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:3,weight:145,rg:"3/fail",mvmt:"Vertical Pull"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:3,weight:170,rg:"3/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:135,rg:"3/fail",mvmt:"Horizontal Pull"},
         {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:3,weight:27, rg:"3/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:210,rg:"3/fail"},
-        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:185,rg:"3/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:210,rg:"3/fail",mvmt:"Horizontal Push"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:185,rg:"3/fail",mvmt:"Incline Push"},
         {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:3,weight:80, rg:"3/fail"},
-        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:145,rg:"3/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:3,weight:145,rg:"3/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"3/fail",mvmt:"Side Delts"},
         {name:"Cable Crunch",                     muscle:"Abs",            sets:3,weight:75, rg:"3/fail"},
       ]},
       {week:3,exercises:[
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail"},
-        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:170,rg:"2/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:140,rg:"2/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:150,rg:"2/fail",mvmt:"Vertical Pull"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:170,rg:"2/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:140,rg:"2/fail",mvmt:"Horizontal Pull"},
         {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:4,weight:30, rg:"2/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:215,rg:"2/fail"},
-        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:190,rg:"2/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:215,rg:"2/fail",mvmt:"Horizontal Push"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:190,rg:"2/fail",mvmt:"Incline Push"},
         {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:4,weight:80, rg:"2/fail"},
-        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:150,rg:"2/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"2/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:150,rg:"2/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:100,rg:"2/fail",mvmt:"Side Delts"},
         {name:"Cable Crunch",                     muscle:"Abs",            sets:4,weight:80, rg:"2/fail"},
       ]},
       {week:4,exercises:[
-        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail"},
-        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:175,rg:"1/fail"},
-        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:145,rg:"1/fail"},
+        {name:"Wide-Grip Pulldown",               muscle:"Back",           sets:4,weight:155,rg:"1/fail",mvmt:"Vertical Pull"},
+        {name:"Parallel Pulldown",                muscle:"Back",           sets:4,weight:175,rg:"1/fail",mvmt:"Vertical Pull"},
+        {name:"Barbell Bent Over Row",            muscle:"Back",           sets:3,weight:145,rg:"1/fail",mvmt:"Horizontal Pull"},
         {name:"Cable Rear Delt Fly",              muscle:"Rear/Side Delts",sets:4,weight:32, rg:"1/fail"},
-        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:220,rg:"1/fail"},
-        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:195,rg:"1/fail"},
+        {name:"Medium Grip Bench Press",          muscle:"Chest",          sets:4,weight:220,rg:"1/fail",mvmt:"Horizontal Push"},
+        {name:"Incline Wide Grip Bench Press",    muscle:"Chest",          sets:3,weight:195,rg:"1/fail",mvmt:"Incline Push"},
         {name:"EZ Bar Curl",                      muscle:"Biceps",         sets:4,weight:82, rg:"1/fail"},
-        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:155,rg:"1/fail"},
-        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:105,rg:"1/fail"},
+        {name:"Close Grip Bench Press",           muscle:"Triceps",        sets:4,weight:155,rg:"1/fail",mvmt:"Horizontal Push"},
+        {name:"Barbell Upright Row",              muscle:"Rear/Side Delts",sets:3,weight:105,rg:"1/fail",mvmt:"Side Delts"},
         {name:"Cable Crunch",                     muscle:"Abs",            sets:4,weight:85, rg:"1/fail"},
       ]},
     ]
@@ -771,50 +1148,50 @@ const workoutData={days:[
     name:"Day 4",focus:"Deadlifts / Legs / Biceps",
     weeks:[
       {week:1,exercises:[
-        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:310,rg:"3/fail"},
-        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:265,rg:"3/fail"},
-        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:565,rg:"3/fail"},
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:310,rg:"3/fail",mvmt:"Glutes"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:265,rg:"3/fail",mvmt:"Hamstring Hip Hinge"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:565,rg:"3/fail",mvmt:"Quads"},
         {name:"EZ Curl",                          muscle:"Biceps",         sets:3,weight:75, rg:"3/fail"},
         {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:55, rg:"3/fail"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:20, rg:"3/fail"},
         {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:3,weight:60, rg:"3/fail"},
-        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:3,weight:325,rg:"3/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:3,weight:325,rg:"3/fail",mvmt:"Traps"},
         {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:40, rg:"3/fail"},
         {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
       ]},
       {week:2,exercises:[
-        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:325,rg:"3/fail"},
-        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:280,rg:"3/fail"},
-        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:595,rg:"3/fail"},
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:325,rg:"3/fail",mvmt:"Glutes"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:3,weight:280,rg:"3/fail",mvmt:"Hamstring Hip Hinge"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:3,weight:595,rg:"3/fail",mvmt:"Quads"},
         {name:"EZ Curl",                          muscle:"Biceps",         sets:3,weight:80, rg:"3/fail"},
         {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:57, rg:"3/fail"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:3,weight:22, rg:"3/fail"},
         {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:3,weight:65, rg:"3/fail"},
-        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:340,rg:"3/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:340,rg:"3/fail",mvmt:"Traps"},
         {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:40, rg:"3/fail"},
         {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:3,weight:0,  rg:"3/fail"},
       ]},
       {week:3,exercises:[
-        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:335,rg:"2/fail"},
-        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:285,rg:"2/fail"},
-        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:605,rg:"2/fail"},
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:335,rg:"2/fail",mvmt:"Glutes"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:285,rg:"2/fail",mvmt:"Hamstring Hip Hinge"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:605,rg:"2/fail",mvmt:"Quads"},
         {name:"EZ Curl",                          muscle:"Biceps",         sets:4,weight:80, rg:"2/fail"},
         {name:"Preacher Curl",                    muscle:"Biceps",         sets:3,weight:60, rg:"2/fail"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:25, rg:"2/fail"},
         {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:4,weight:67, rg:"2/fail"},
-        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:350,rg:"2/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:350,rg:"2/fail",mvmt:"Traps"},
         {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:45, rg:"2/fail"},
         {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:4,weight:0,  rg:"2/fail"},
       ]},
       {week:4,exercises:[
-        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:340,rg:"1/fail"},
-        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:290,rg:"1/fail"},
-        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:620,rg:"1/fail"},
+        {name:"Deficit Deadlift",                 muscle:"Back",           sets:3,weight:340,rg:"1/fail",mvmt:"Glutes"},
+        {name:"Stiff-Legged Deadlift",            muscle:"Hamstrings",     sets:4,weight:290,rg:"1/fail",mvmt:"Hamstring Hip Hinge"},
+        {name:"Leg Press",                        muscle:"Quads",          sets:4,weight:620,rg:"1/fail",mvmt:"Quads"},
         {name:"EZ Curl",                          muscle:"Biceps",         sets:4,weight:82, rg:"1/fail"},
         {name:"Preacher Curl",                    muscle:"Biceps",         sets:4,weight:62, rg:"1/fail"},
         {name:"Dumbbell Lateral Raise",           muscle:"Rear/Side Delts",sets:4,weight:27, rg:"1/fail"},
         {name:"Tricep Pushdown",                  muscle:"Triceps",        sets:4,weight:70, rg:"1/fail"},
-        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:360,rg:"1/fail"},
+        {name:"Dumbbell Shrug",                   muscle:"Traps",          sets:4,weight:360,rg:"1/fail",mvmt:"Traps"},
         {name:"Stair Calves",                     muscle:"Calves",         sets:6,weight:45, rg:"1/fail"},
         {name:"Ab Wheel / Crunch",                muscle:"Abs",            sets:4,weight:0,  rg:"1/fail"},
       ]},
@@ -993,14 +1370,125 @@ const macroPlans={
 
 // STATE
 let S={week:0,day:0,phase:"Base",macroPhase:"Base",trainingType:"First Thing",
-       weightLog:[],doneExercises:{},setData:{},ratings:{},customWeights:{},customSets:{},tenRM:{},mealDone:{},slotFoods:{},mealTemplates:{}};
-try{const sv=localStorage.getItem('jta4');if(sv)S=Object.assign({ratings:{},customWeights:{},customSets:{},tenRM:{},mealDone:{},slotFoods:{},mealTemplates:{}},S,JSON.parse(sv));}catch(e){}
+       weightLog:[],doneExercises:{},setData:{},ratings:{},customWeights:{},customSets:{},tenRM:{},tenRMHistory:{},mealDone:{},slotFoods:{},mealTemplates:{},exerciseSwaps:{},workoutStarted:{}};
+try{const sv=localStorage.getItem('jta4');if(sv)S=Object.assign({ratings:{},customWeights:{},customSets:{},tenRM:{},tenRMHistory:{},mealDone:{},slotFoods:{},mealTemplates:{},exerciseSwaps:{},workoutStarted:{}},S,JSON.parse(sv));}catch(e){}
 function save(){try{localStorage.setItem('jta4',JSON.stringify(S));}catch(e){}}
 
 // NAV
+function renderProgress(){
+  const cont=document.getElementById('progress-container');
+  if(!cont) return;
+  if(!S.tenRMHistory||!Object.keys(S.tenRMHistory).length){
+    cont.innerHTML='<div class="progress-empty">No 10RM history yet.<br><br>Set your 10RM on any exercise card<br>and it will appear here.</div>';
+    return;
+  }
+  // Sort exercises by most recently updated
+  const entries=Object.entries(S.tenRMHistory)
+    .filter(([,h])=>h&&h.length)
+    .sort((a,b)=>{
+      const ad=a[1][a[1].length-1].date, bd=b[1][b[1].length-1].date;
+      return bd.localeCompare(ad);
+    });
+
+  cont.innerHTML='';
+  entries.forEach(([exName, history])=>{
+    const current=history[history.length-1].weight;
+    const first=history[0].weight;
+    const delta=current-first;
+    const deltaStr=delta>0?`+${delta}lbs`:delta<0?`${delta}lbs`:'no change';
+    const deltaColor=delta>0?'var(--success)':delta<0?'var(--warning)':'var(--muted)';
+    const safeId='pr-'+exName.replace(/[^a-z0-9]/gi,'_');
+
+    const card=document.createElement('div');
+    card.className='pr-card';
+    card.innerHTML=`
+      <div class="pr-header" onclick="togglePR('${safeId}')">
+        <div>
+          <div class="pr-name">${exName}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${history.length} session${history.length!==1?'s':''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="pr-current">${current}lbs</div>
+          <div class="pr-delta" style="color:${deltaColor};">${deltaStr}</div>
+        </div>
+      </div>
+      <div class="pr-body" id="${safeId}">
+        <canvas class="pr-chart" id="${safeId}-canvas"></canvas>
+        <div class="pr-history">
+          ${[...history].reverse().map(h=>`
+            <div class="pr-hist-row">
+              <span>${h.date}</span>
+              <span class="pr-hist-weight">${h.weight}lbs</span>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    cont.appendChild(card);
+  });
+}
+
+function togglePR(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const wasOpen=el.classList.contains('open');
+  el.classList.toggle('open');
+  if(!wasOpen) drawPRChart(id);
+}
+
+function drawPRChart(id){
+  const canvas=document.getElementById(id+'-canvas');
+  if(!canvas) return;
+  // Get exercise name from parent card
+  const exName=canvas.closest('.pr-card').querySelector('.pr-name').textContent;
+  const history=(S.tenRMHistory&&S.tenRMHistory[exName])||[];
+  if(history.length<2){canvas.style.display='none';return;}
+
+  const W=canvas.offsetWidth||300, H=80;
+  canvas.width=W*window.devicePixelRatio;
+  canvas.height=H*window.devicePixelRatio;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+
+  const weights=history.map(h=>h.weight);
+  const minW=Math.min(...weights), maxW=Math.max(...weights);
+  const pad=16, range=maxW-minW||1;
+  const tx=i=>(pad + (i/(history.length-1))*(W-pad*2));
+  const ty=w=>(H-pad - ((w-minW)/range)*(H-pad*2));
+
+  // gradient fill
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(232,255,71,0.3)');
+  grad.addColorStop(1,'rgba(232,255,71,0)');
+  ctx.beginPath();
+  ctx.moveTo(tx(0),ty(weights[0]));
+  weights.forEach((w,i)=>{if(i>0)ctx.lineTo(tx(i),ty(w));});
+  ctx.lineTo(tx(weights.length-1),H);
+  ctx.lineTo(tx(0),H);
+  ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+
+  // line
+  ctx.beginPath();
+  ctx.strokeStyle='#e8ff47';ctx.lineWidth=2;ctx.lineJoin='round';
+  weights.forEach((w,i)=>{i===0?ctx.moveTo(tx(i),ty(w)):ctx.lineTo(tx(i),ty(w));});
+  ctx.stroke();
+
+  // dots
+  weights.forEach((w,i)=>{
+    ctx.beginPath();ctx.arc(tx(i),ty(w),3,0,Math.PI*2);
+    ctx.fillStyle='#e8ff47';ctx.fill();
+  });
+
+  // min/max labels
+  ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='10px DM Sans,sans-serif';
+  ctx.textAlign='left';ctx.fillText(maxW+'lbs',4,12);
+  ctx.fillText(minW+'lbs',4,H-4);
+}
+
 function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(name==='progress') setTimeout(renderProgress,0);
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='home') updateHome();
@@ -1008,6 +1496,11 @@ function showPage(name,btn){
   if(name==='macros'){buildPhaseBtns();buildTTBtns();renderMeals();}
 }
 function goToWorkout(){
+  // Stamp this workout as started today
+  if(!S.workoutStarted) S.workoutStarted={};
+  const workoutKey=`workout:${todayStr()}:w${S.week}d${S.day}`;
+  S.workoutStarted[workoutKey]=true;
+  save();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-workout').classList.add('active');
@@ -1053,6 +1546,28 @@ function updateHome(){
   if(wl!==null){const el=document.getElementById('home-week-lost');el.innerHTML=`${wl>0?'':wl<0?'+':''}${Math.abs(wl).toFixed(1)} <span>lbs</span>`;el.style.color=wl>0?'var(--success)':wl<0?'var(--accent3)':'var(--muted)';}
   let done=0;wd.exercises.forEach((_,i)=>{if(S.doneExercises[`w${S.week}d${S.day}e${i}`])done++;});
   document.getElementById('stat-done').innerHTML=`${done} <span>ex</span>`;
+
+  // Button state: started today → "Finish Workout", otherwise "Start Workout"
+  const btn=document.getElementById('go-btn');
+  if(btn){
+    const workoutKey=`workout:${todayStr()}:w${S.week}d${S.day}`;
+    const started=S.workoutStarted&&S.workoutStarted[workoutKey];
+    const allDone=done>0&&done===wd.exercises.length;
+    if(allDone){
+      btn.textContent='✓ WORKOUT COMPLETE';
+      btn.style.background='var(--success)';
+      btn.style.color='#000';
+    } else if(started){
+      btn.textContent='CONTINUE WORKOUT';
+      btn.style.background='#47c4ff';
+      btn.style.color='#000';
+    } else {
+      btn.textContent='START WORKOUT';
+      btn.style.background='';
+      btn.style.color='';
+    }
+  }
+
   renderPhaseAlert('home-alert');
 }
 
@@ -1094,24 +1609,28 @@ function renderExercises(){
   exs.forEach((ex,ei)=>{
     const key=getExKey(S.week,S.day,ei);
     const isDone=!!S.doneExercises[key];
+    // Apply exercise swap if set
+    const swappedName=getSwappedName(S.day,ei,ex.name);
+    const exDisplay={...ex, name:swappedName};
     const muscleStatus=getMuscleStatus(ex.muscle,S.week);
 
     // Effective weight: 10RM > custom > plan default
-    const eW=effWeight(key,ex);
-    const eS=S.customSets[key]!==undefined?S.customSets[key]:ex.sets;
+    const eW=effWeight(key,exDisplay);
+    // Effective sets: RP rating-adjusted
+    const eS=effSetsRP(S.day,ei,S.week);
 
     // Current session rating
-    const ratingKey=`ex:${ex.name}:${key}`;
+    const ratingKey=`ex:${exDisplay.name}:${key}`;
     const cr=S.ratings[ratingKey]||'';
 
     // Previous session data → build rec strip
-    const prev=getPrevSessionData(ex.name);
+    const prev=getPrevSessionData(exDisplay.name);
     let recHtml='';
     if(prev && prev.ratingKey!==ratingKey){
       // get weight/sets used last session
       const prevW=prev.w!==null?prev.w:(get10RM(ex.name)||ex.weight);
       const prevS=prev.sets!==null?prev.sets:ex.sets;
-      const rec=buildRec(ex.name,prev.exKey,prevW,prevS,ex.rg,prev.rating);
+      const rec=buildRec(exDisplay.name,prev.exKey,prevW,prevS,ex.rg,prev.rating);
       const showApply=rec.type!=='hold'||rec.weight!==eW;
       recHtml=`<div class="rec-strip" style="border-left:3px solid ${rec.color};">
         <span class="rec-icon">${rec.emoji}</span>
@@ -1140,15 +1659,17 @@ function renderExercises(){
     const hdr=document.createElement('div');hdr.className='exercise-header';
     hdr.innerHTML=`
       <div style="flex:1;min-width:0;">
-        <div class="exercise-name">${ex.name}${progressBadge}</div>
-        <div class="exercise-tags">
-          <span class="muscle-tag ${muscleStatus.cls}">${ex.muscle}${muscleStatus.label?' · '+muscleStatus.label:''}</span>
+        <div class="exercise-name">${exDisplay.name}${progressBadge}</div>
+        <div class="exercise-tags" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">
+          <span class="muscle-tag ${muscleStatus.cls}" onclick="event.stopPropagation();showVolumeInfo('${ex.muscle}',${S.week})" style="cursor:pointer;">${ex.muscle}${muscleStatus.label?' · '+muscleStatus.label:''} <span style="opacity:0.6;font-size:9px;">ⓘ</span></span>
+          ${getVideoUrl(exDisplay.name)?`<a class="video-btn" href="${getVideoUrl(exDisplay.name)}" target="_blank">▶ Video</a>`:''}
+          <button class="swap-btn" onclick="event.stopPropagation();openSwapModal(${S.day},${ei},'${exDisplay.name.replace(/'/g,"\'")}','${ex.mvmt||ex.muscle}')">⇄ Swap</button>
         </div>
       </div>
       <div class="exercise-right">
         <div class="badge-row">
           <span class="badge sets">${eS}×</span>
-          <span class="badge weight">${eW}lbs</span>
+          <span class="badge weight" style="${eW===null?'color:var(--warning);':''}">${eW!==null?eW+'lbs':'Set 10RM'}</span>
         </div>
         <div class="done-check${isDone?' checked':''}" onclick="toggleDone('${key}',event)">
           ${isDone?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
@@ -1162,23 +1683,38 @@ function renderExercises(){
       const sk=`${key}s${s}`,sv=S.setData[sk]||{};
       setRows+=`<div class="set-row">
         <div class="set-num">${s+1}</div>
-        <input class="set-input" type="number" inputmode="decimal" placeholder="${eW}" value="${sv.weight||''}" onchange="saveSet('${sk}','weight',this.value);checkProgressNow('${key}','${ex.name}',${eS},'${ex.rg}',${eW})"/>
-        <input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="${sv.reps||''}" onchange="saveSet('${sk}','reps',this.value);checkProgressNow('${key}','${ex.name}',${eS},'${ex.rg}',${eW})"/>
+        <input class="set-input" type="number" inputmode="decimal" placeholder="${eW!==null?eW:'set 10RM first'}" value="${sv.weight||''}" onchange="saveSet('${sk}','weight',this.value);checkProgressNow('${key}','${exDisplay.name}',${eS},'${ex.rg}',${eW||0})"/>
+        <input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="${sv.reps||''}" onchange="saveSet('${sk}','reps',this.value);checkProgressNow('${key}','${exDisplay.name}',${eS},'${ex.rg}',${eW||0})"/>
       </div>`;
     }
 
+    const cur10RM=get10RM(exDisplay.name);
     body.innerHTML=`
-      <div class="rep-goal-hint">10RM target: ${ex.rg} · log actual reps each set</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px 10px;border-bottom:1px solid var(--border);background:var(--surface2);border-radius:10px;margin-bottom:10px;">
+        <div style="flex:1;">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Your 10RM (lbs)</div>
+          <input type="number" inputmode="decimal" class="tenrm-input" id="tenrm-${key}"
+            placeholder="Enter your 10RM"
+            value="${cur10RM!==null?cur10RM:''}"
+            onchange="updateTenRM('${exDisplay.name}',this.value,'${key}')"
+            style="width:100%;background:none;border:none;border-bottom:2px solid ${cur10RM?'var(--accent)':'var(--border)'};color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:28px;padding:2px 0;-webkit-appearance:none;appearance:none;"/>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Working weight</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${eW!==null?'var(--accent)':' var(--warning)'};">${eW!==null?eW+'lbs':'—'}</div>
+          <div style="font-size:10px;color:var(--muted);">(~85% of 10RM)</div>
+        </div>
+      </div>
+      <div class="rep-goal-hint">Rep goal: ${ex.rg} · log actual reps each set${eS !== ex.sets ? ` · <span style='color:var(--accent);font-weight:700;'>${eS > ex.sets ? '+' : ''}${eS - ex.sets} sets from rating</span>` : ''}</div>
       <div class="sets-label">Set &nbsp; Weight (lbs) &nbsp;/&nbsp; Reps</div>
       ${setRows}
       <div id="progress-hint-${key}" style="font-size:11px;text-align:center;padding:6px 0;color:var(--muted);"></div>
       <div class="rating-section">
         <div class="rating-label">How did this feel?</div>
         <div class="rating-btns">
-          <button class="rate-btn easy ${cr==='easy'?'selected':''}"     onclick="rateEx('${ratingKey}','easy','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">😎<br>Easy</button>
-          <button class="rate-btn moderate ${cr==='moderate'?'selected':''}" onclick="rateEx('${ratingKey}','moderate','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">💪<br>Moderate</button>
-          <button class="rate-btn hard ${cr==='hard'?'selected':''}"     onclick="rateEx('${ratingKey}','hard','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">🔥<br>Hard</button>
-          <button class="rate-btn crusher ${cr==='crusher'?'selected':''}"   onclick="rateEx('${ratingKey}','crusher','${key}','${ex.name}',${eW},${eS},'${ex.rg}')">💀<br>Crusher</button>
+          <button class="rate-btn easy ${cr==='easy'?'selected':''}"     onclick="rateEx('${ratingKey}','easy','${key}','${exDisplay.name}',${eW||0},${eS},'${ex.rg}')"><span style="font-size:22px;">😎</span><br>Easy</button>
+          <button class="rate-btn moderate ${cr==='moderate'?'selected':''}" onclick="rateEx('${ratingKey}','moderate','${key}','${exDisplay.name}',${eW||0},${eS},'${ex.rg}')"><span style="font-size:22px;">💪</span><br>Moderate</button>
+          <button class="rate-btn hard ${cr==='hard'?'selected':''}"     onclick="rateEx('${ratingKey}','hard','${key}','${exDisplay.name}',${eW||0},${eS},'${ex.rg}')"><span style="font-size:22px;">🔥</span><br>Hard</button>
         </div>
       </div>`;
 
@@ -1187,6 +1723,97 @@ function renderExercises(){
     card.appendChild(body);
     cont.appendChild(card);
   });
+}
+
+function showVolumeInfo(muscle, weekIdx){
+  const rp=RP[muscle];
+  const status=getMuscleStatus(muscle,weekIdx);
+  const sets=calcWeeklyVolume(weekIdx)[muscle]||0;
+
+  const statusExplain={
+    'Below MEV': {
+      color:'var(--danger)',
+      headline:'Below Minimum Effective Volume',
+      why:`You're not doing enough sets for your ${muscle} to grow. Below MEV, your training is essentially maintenance at best — the muscle isn't getting enough stimulus to adapt.`,
+      fix:`Add more sets this week or pick exercises that hit ${muscle} more directly.`
+    },
+    'MEV→MAV': {
+      color:'var(--warning)',
+      headline:'Between MEV and MAV',
+      why:`You're stimulating your ${muscle} enough to make some progress, but you haven't hit the range where growth is optimized yet.`,
+      fix:`You're in the right direction — a few more sets would push you into the full growth zone.`
+    },
+    'In MAV': {
+      color:'var(--success)',
+      headline:'In the Growth Zone',
+      why:`Your ${muscle} volume is in the sweet spot. You're doing enough to drive real adaptation without overwhelming your recovery capacity.`,
+      fix:`Keep it here. As weeks progress and your body adapts, you can push toward the higher end of MAV.`
+    },
+    'At/Over MRV': {
+      color:'#ff6b47',
+      headline:'At or Exceeding Maximum Recoverable Volume',
+      why:`You're doing more ${muscle} sets than your body can recover from between sessions. More volume isn't always better — past MRV, you're accumulating fatigue faster than you can adapt.`,
+      fix:`Consider dropping a set or two, or making sure your sleep and nutrition are dialed in to support this level.`
+    }
+  };
+
+  const info=statusExplain[status.label]||statusExplain['In MAV'];
+
+  if(!rp){
+    document.getElementById('vol-modal-body').innerHTML=`<p style="color:var(--muted);">No RP volume targets on file for ${muscle}.</p>`;
+  } else {
+    document.getElementById('vol-modal-body').innerHTML=`
+      <div style="background:var(--surface2);border-radius:12px;padding:14px 16px;margin-bottom:16px;border-left:3px solid ${info.color};">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:${info.color};text-transform:uppercase;margin-bottom:4px;">${status.label||'In MAV'}</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">${info.headline}</div>
+        <div style="color:var(--muted);font-size:13px;">${info.why}</div>
+        ${info.fix?`<div style="margin-top:8px;font-size:13px;color:var(--text);">💡 ${info.fix}</div>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+        <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">MEV</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--danger);">${rp.MEV}</div>
+          <div style="font-size:10px;color:var(--muted);">sets/week</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">MAV</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--success);">${rp.MAVlo}–${rp.MAVhi}</div>
+          <div style="font-size:10px;color:var(--muted);">sets/week</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">MRV</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff6b47;">${rp.MRV}</div>
+          <div style="font-size:10px;color:var(--muted);">sets/week</div>
+        </div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">What these mean</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+          <strong style="color:var(--danger);">MEV</strong> — Minimum Effective Volume. The floor. Below this and you're not stimulating growth.<br>
+          <strong style="color:var(--success);">MAV</strong> — Minimum Adaptive Volume. The growth zone. This is where you want to live.<br>
+          <strong style="color:#ff6b47;">MRV</strong> — Maximum Recoverable Volume. The ceiling. Past this and fatigue outpaces adaptation.
+        </div>
+      </div>
+      <div style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);">
+        YOUR ${muscle.toUpperCase()} THIS WEEK: <span style="color:${info.color};">${sets} sets</span>
+      </div>`;
+  }
+  document.getElementById('vol-modal-title').textContent=muscle.toUpperCase()+' VOLUME';
+  document.getElementById('vol-modal').classList.add('open');
+}
+
+function closeVolModal(){
+  document.getElementById('vol-modal').classList.remove('open');
+}
+
+function updateTenRM(exName, val, key){
+  if(!isNaN(w)&&w>0){
+    set10RM(exName,w);
+    // Update the working weight display and border
+    const inp=document.getElementById('tenrm-'+key);
+    if(inp) inp.style.borderBottomColor='var(--accent)';
+    renderExercises();
+  }
 }
 
 function checkProgressNow(key,exName,sets,rg,eW){
@@ -1207,16 +1834,16 @@ function checkProgressNow(key,exName,sets,rg,eW){
 
 function rateEx(ratingKey,rating,key,exName,eW,eS,rg){
   S.ratings[ratingKey]=rating;
-  // If all reps clean and not crusher → update 10RM to current weight and queue next weight
   const clean=allRepsClean(key,eS,eW,rg);
-  if(clean && rating!=='crusher'){
+  if(clean && rating==='easy'){
     const inc=weightIncrement(exName);
-    set10RM(exName, eW+inc); // next session's 10RM
-  } else if(clean && rating==='crusher'){
+    set10RM(exName, eW+inc);
+  } else if(clean && rating==='moderate'){
     set10RM(exName, eW); // hold
-  } else if(rating==='crusher'){
-    const newW=Math.round((eW*0.95)/2.5)*2.5;
-    set10RM(exName, newW); // drop
+  } else if(rating==='hard'){
+    // didn't feel great — hold or drop if reps were missed
+    if(!clean){ const newW=Math.round((eW*0.95)/2.5)*2.5; set10RM(exName,newW); }
+    else { set10RM(exName,eW); }
   }
   save();renderExercises();
 }
